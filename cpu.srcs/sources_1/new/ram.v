@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
+// Company:
+// Engineer:
+//
 // Create Date: 2017/11/21 13:45:28
-// Design Name: 
+// Design Name:
 // Module Name: ram
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-// 
+//
 //////////////////////////////////////////////////////////////////////////////////
 
 
@@ -30,7 +30,7 @@ module ram(
 	input [31:0] w_data
 );
 	reg [4:0] addr_reg;
-	reg [31:0] mem [0:255];
+	reg [31:0] mem [0:65535];
 
 	always @(posedge clk) begin
 		if(we) mem[w_addr] <= w_data; //書き込みのタイミングを同期
