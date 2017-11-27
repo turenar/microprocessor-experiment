@@ -5,11 +5,11 @@ module decoder(
 	input rst,
 	output halt,
 	input [31:0] instruction,
-	input [31:0] rsv,
-	input [31:0] rtv,
 	output [5:0] opcode,
 	output [1:0] optype, // 1=R, 2=I, 3=A
+	output [4:0] rar,
 	output [31:0] rav,
+	output [4:0] rbr,
 	output [31:0] rbv,
 	output [4:0] rout,
 	output [10:0] aux,
@@ -18,17 +18,19 @@ module decoder(
 	);
 
 	reg halt;
-	reg [5:0] Ropc;
-	reg [1:0] Ropt;
-	reg [31:0] Rrav;
-	reg [31:0] Rrbv;
-	reg [4:0] Rrout;
-	reg [10:0] Raux;
-	reg [15:0] Rimm;
-	reg [25:0] Raddr;
+	reg [5:0] Ropc; assign opcode = Ropc;
+	reg [1:0] Ropt; assign optype = Ropt;
+	reg [4:0] Rrar; assign rar = Rrar;
+	reg [31:0] Rrav; assign rav = Rrav;
+	reg [4:0] Rrbr; assign rbr = Rrbr;
+	reg [31:0] Rrbv; assign rbv = Rrbv;
+	reg [4:0] Rrout; assign rout = Rrout;
+	reg [10:0] Raux; assign aux = Raux;
+	reg [15:0] Rimm; assign imm = Rimm;
+	reg [25:0] Raddr; assign addr = Raddr;
 
 	wire [5:0] WOopc; assign WOopc = instruction[31:26];
-	// wire [4:0] WOrs; assign WOrs = instruction[25:21];
+	wire [4:0] WOrs; assign WOrs = instruction[25:21];
 	wire [4:0] WOrt; assign WOrt = instruction[20:16];
 	wire [4:0] WOrd; assign WOrd = instruction[15:11];
 	wire [10:0]WOaux; assign WOaux = instruction[10:0];
@@ -39,17 +41,22 @@ module decoder(
 	wire [5:0] WauxV; assign WauxV = Raux[5:0];
 
 	always @ (posedge clk) begin
-		if(!halt) begin
+		if(rst) begin
+			halt <= 0;
+			Ropc <= 0; Ropt <= 0; Rrar <= 0; Rrav <= 0; Rrbr <= 0; Rrbv <= 0;
+			Rrout <= 0; Raux <= 0; Rimm <= 0; Raddr <= 0;
+		end else if(!halt) begin
 			Ropc <= WOopc;
 			if(WOopc == `OPCODE_AUX) begin
 				Ropt <= `OPTYPE_R;
-				Rrav <= rsv;
-				Rrbv <= rtv;
+				Rrar <= WOrs;
+				Rrbr <= WOrt;
 				Rrout <= WOrd;
 				Raux <= WOaux;
 			end else if(WOopc == `OPCODE_ADDI) begin
 				Ropt <= `OPTYPE_R;
-				Rrav <= rsv;
+				Rrar <= WOrs;
+				Rrbr <= 0;
 				Rrbv <= { {16{WOimm[15]}}, WOimm};
 				Rrout <= WOrt;
 				Raux <= 0;
