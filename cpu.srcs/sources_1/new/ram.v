@@ -32,6 +32,12 @@ module ram(
 	reg [4:0] addr_reg;
 	reg [31:0] mem [0:65535];
 
+	integer i;
+	initial begin
+		// for(i=0;i<65536;i=i+1) mem[i] <= 0;
+		$readmemb("init.ram", mem);
+	end
+
 	always @(posedge clk) begin
 		if(we) mem[w_addr] <= w_data; //書き込みのタイミングを同期
 		addr_reg <= r_addr;           //読み出しアドレスを同期
