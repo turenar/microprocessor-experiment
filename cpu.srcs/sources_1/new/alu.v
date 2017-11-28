@@ -3,7 +3,7 @@ module alu(
 	input [10:0] aux,
 	input [31:0] ra,
 	input [31:0] rb,
-	output [31:0] rc
+	output [31:0] rout
 	);
 
 	reg [31:0] result;
@@ -24,5 +24,5 @@ module alu(
 		endcase
 	end
 
-	assign rc = result;
+	assign rout = result;
 endmodule

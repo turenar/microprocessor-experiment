@@ -14,10 +14,11 @@ module decoder(
 	output [4:0] rout,
 	output [10:0] aux,
 	output [15:0] imm,
-	output [25:0] addr
+	output [25:0] addr,
+	output [31:0] mem_read_addr
 	);
 
-	reg halt;
+	reg Rhalt; assign halt = Rhalt;
 	reg [5:0] Ropc; assign opcode = Ropc;
 	reg [1:0] Ropt; assign optype = Ropt;
 	reg [4:0] Rrar; assign rar = Rrar;
@@ -28,6 +29,7 @@ module decoder(
 	reg [10:0] Raux; assign aux = Raux;
 	reg [15:0] Rimm; assign imm = Rimm;
 	reg [25:0] Raddr; assign addr = Raddr;
+	reg [31:0] Rmem_read_addr; assign mem_read_addr = Rmem_read_addr;
 
 	wire [5:0] WOopc; assign WOopc = instruction[31:26];
 	wire [4:0] WOrs; assign WOrs = instruction[25:21];
@@ -42,18 +44,19 @@ module decoder(
 
 	always @ (posedge clk) begin
 		if(rst) begin
-			halt <= 0;
+			Rhalt <= 0;
 			Ropc <= 0; Ropt <= 0; Rrar <= 0; Rrav <= 0; Rrbr <= 0; Rrbv <= 0;
-			Rrout <= 0; Raux <= 0; Rimm <= 0; Raddr <= 0;
-		end else if(!halt) begin
-			Ropc <= WOopc;
+			Rrout <= 0; Raux <= 0; Rimm <= 0; Raddr <= 0; Rmem_read_addr <= 0;
+		end else if(!Rhalt) begin
 			if(WOopc == `OPCODE_AUX) begin
+				Ropc <= WOopc;
 				Ropt <= `OPTYPE_R;
 				Rrar <= WOrs;
 				Rrbr <= WOrt;
 				Rrout <= WOrd;
 				Raux <= WOaux;
 			end else if(WOopc == `OPCODE_ADDI) begin
+				Ropc <= `OPCODE_AUX;
 				Ropt <= `OPTYPE_R;
 				Rrar <= WOrs;
 				Rrbr <= 0;
@@ -61,7 +64,7 @@ module decoder(
 				Rrout <= WOrt;
 				Raux <= 0;
 			end else if(WOopc == `OPCODE_HALT) begin
-				halt <= 1;
+				Rhalt <= 1;
 			end
 		end
 	end
