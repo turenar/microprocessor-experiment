@@ -57,7 +57,9 @@ module test_top();
 		wait_posedge_clk(1);
 		rst <= 0;
 		sw[0] = 1;
-		wait_posedge_clk(100);
+		@(posedge led[7])
+			;
+		wait_posedge_clk(10);
 		$finish;
 	end
 
