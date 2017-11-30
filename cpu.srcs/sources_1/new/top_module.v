@@ -32,7 +32,8 @@ module top_module(
 	wire cpu_clk; assign cpu_clk = counter == 0;
 	wire rst; assign rst = ~cpu_resetn;
 	wire halt;
-	reg [7:0] Rled; assign led = Rled;
+	assign led[6:0] = 0;
+	assign led[7] = halt;
 
 	wire mem_wenabled;
 	wire [31:0] mem_r1_addr, mem_r2_addr, mem_w_addr;
@@ -64,6 +65,7 @@ module top_module(
 		.w_index(reg_w_index), .w_data(reg_w_data));
 
 	wire pdc_halt;
+	wire [31:0] pdc_inst;
 	wire [5:0] pdc_opc;
 	wire [1:0] pdc_opt;
 	wire [4:0] pdc_rar, pdc_rbr, pdc_ror;
@@ -133,17 +135,12 @@ module top_module(
 		.out_mem_enabled(mem_wenabled), .out_mem_addr(mem_w_addr),
 		.out_mem_data(mem_w_data));
 
-	assign clk = sysclk | (dec_halt | exec_halt);
-	assign halt = dec_halt || exec_halt;
+	assign halt = pdc_halt || exec_halt;
+	assign clk = sysclk | halt;
 
-	initial begin
-		Rled <= 0;
-	end
 	always @ (posedge clk) begin
 		if(rst) begin
 			counter <= 0;
-		end else if (halt) begin
-			Rled <= 1;
 		end else begin
 			counter <= counter + 1;
 		end
