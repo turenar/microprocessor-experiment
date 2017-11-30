@@ -10,8 +10,6 @@ module executor(
 	input [31:0] rbv,
 	input [4:0] rout,
 	input [10:0] aux,
-	input [15:0] imm,
-	input [25:0] addr,
 	input [31:0] mem_v,
 	output [4:0] out_reg_index,
 	output [31:0] out_reg_data,

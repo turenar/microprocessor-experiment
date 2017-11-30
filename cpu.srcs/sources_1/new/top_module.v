@@ -63,27 +63,45 @@ module top_module(
 		.r2_index(reg_r2_index), .r2_data(reg_r2_data),
 		.w_index(reg_w_index), .w_data(reg_w_data));
 
+	wire pdc_halt;
+	wire [5:0] pdc_opc;
+	wire [1:0] pdc_opt;
+	wire [4:0] pdc_rar, pdc_rbr, pdc_ror;
+	wire [31:0] pdc_rav, pdc_rbv;
+	wire [10:0] pdc_aux;
+	wire [15:0] pdc_imm;
+	wire [25:0] pdc_addr;
+	wire [31:0] pdc_read_mem_addr;
+	assign reg_r1_index = pdc_rar;
+	assign reg_r2_index = pdc_rbr;
+	assign pdc_inst = mem_r1_data;
+	predecoder pdc0(
+		.clk(clk && (counter == 1 || rst)), .rst(rst), .halt(pdc_halt),
+		.instruction(mem_r1_data),
+		.opcode(pdc_opc), .optype(pdc_opt),
+		.rar(pdc_rar), .rav(pdc_rav), .rbr(pdc_rbr), .rbv(pdc_rbv),
+		.rout(pdc_ror), .aux(pdc_aux), .imm(pdc_imm), .addr(pdc_addr),
+		.mem_read_addr(pdc_read_mem_addr));
+
 	wire dec_halt;
-	wire [31:0] dec_inst;
 	wire [5:0] dec_opc;
 	wire [1:0] dec_opt;
-	wire [4:0] dec_rar, dec_rbr, dec_ror;
-	wire [31:0] dec_rav, dec_rbv;
+	wire [4:0] dec_ror;
+	wire [31:0] dec_in_rav, dec_in_rbv, dec_rav, dec_rbv;
 	wire [10:0] dec_aux;
-	wire [15:0] dec_imm;
-	wire [25:0] dec_addr;
-	wire [31:0] dec_read_mem_addr;
-	assign mem_r2_addr = dec_read_mem_addr;
-	assign reg_r1_index = dec_rar;
-	assign reg_r2_index = dec_rbr;
-	assign dec_inst = mem_r1_data;
+	assign dec_in_rav = pdc_rar != 0 ? reg_r1_data : pdc_rav;
+	assign dec_in_rbv = pdc_rbr != 0 ? reg_r2_data : pdc_rbv;
+
 	decoder dec0(
-		.clk(clk && (counter == 1 || rst)), .rst(rst), .halt(dec_halt),
-		.instruction(dec_inst),
-		.opcode(dec_opc), .optype(dec_opt),
-		.rar(dec_rar), .rav(dec_rav), .rbr(dec_rbr), .rbv(dec_rbv),
-		.rout(dec_ror), .aux(dec_aux), .imm(dec_imm), .addr(dec_addr),
-		.mem_read_addr(mem_r2_addr));
+		.clk(clk && (counter == 1 || rst)), .rst(rst),
+		.in_opc(pdc_opc), .in_opt(pdc_opt),
+		.in_rav(dec_in_rav), .in_rbv(dec_in_rbv),
+		.in_rout(pdc_ror), .in_aux(pdc_aux), .in_imm(pdc_imm), .in_addr(pdc_addr),
+		.in_mem_read_addr(pdc_read_mem_addr),
+		.out_opc(dec_opc), .out_opt(dec_opt),
+		.out_rav(dec_rav), .out_rbv(dec_rbv),
+		.out_rout(dec_ror), .out_aux(dec_aux),
+		.out_mem_read_addr(mem_r2_addr));
 
 	wire exec_halt;
 	wire [31:0] exec_rav, exec_rbv;
@@ -94,14 +112,12 @@ module top_module(
 	wire exec_mem_enabled;
 	wire [31:0] exec_mem_addr;
 	wire [31:0] exec_mem_data;
-	assign exec_rav = dec_rar != 0 ? reg_r1_data : dec_rav;
-	assign exec_rbv = dec_rbr != 0 ? reg_r2_data : dec_rbv;
 
 	executor exec0(
 		.clk(clk && (counter == 2 || rst)), .rst(rst), .halt(exec_halt),
 		.opcode(dec_opc), .optype(dec_opt),
-		.rav(exec_rav), .rbv(exec_rbv), .rout(dec_ror),
-		.aux(dec_aux), .imm(dec_imm), .addr(dec_addr), .mem_v(mem_r2_data),
+		.rav(dec_rav), .rbv(dec_rbv), .rout(dec_ror),
+		.aux(dec_aux), .mem_v(mem_r2_data),
 		.out_reg_index(exec_reg_index), .out_reg_data(exec_reg_data),
 		.out_pc_enabled(exec_pc_enabled), .out_mem_enabled(exec_mem_enabled),
 		.out_mem_addr(exec_mem_addr), .out_mem_data(exec_mem_data));
