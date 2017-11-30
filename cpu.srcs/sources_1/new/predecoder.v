@@ -42,27 +42,33 @@ module predecoder(
 	wire [4:0] Wshift; assign Wshift = Raux[10:6];
 	wire [5:0] WauxV; assign WauxV = Raux[5:0];
 
-	task Tset_register(input [4:0] Arar, input [31:0] Arav, input[4:0] Arbr, input [31:0] Arbv); begin
-		Rrar <= Arar; Rrav <= Arav; Rrbr <= Arbr; Rrbv <= Arbv;
-	end endtask
+	task Tset_register(input [4:0] Arar, input [31:0] Arav, input[4:0] Arbr, input [31:0] Arbv);
+		begin
+			Rrar <= Arar; Rrav <= Arav; Rrbr <= Arbr; Rrbv <= Arbv;
+		end
+	endtask
 	task TopR(
 		input [5:0] Aopc,
 		input [4:0] Arar, input [31:0] Arav, input[4:0] Arbr, input [31:0] Arbv,
-		input [4:0] Arout, input [10:0] Aaux); begin
-		Ropc <= Aopc; Ropt <= `OPTYPE_R;
-		Tset_register(Arar, Arav, Arbr, Arbv);
-		Rrout <= Arout; Raux <= Aaux; Rimm <= 0; Raddr <= 0; Rmem_read_addr <= 0;
-	end endtask
-	task TopImemread_offset(input [5:0] Aopc, input [5:0] Arar, input [4:0] Arout); begin
-		Ropc <= Aopc; Ropt <= `OPTYPE_I; Tset_register(Arar, 0, 0, 0);
-		Rrout <= Arout; Raux <= 0; Rimm <= WOimm; Raddr <= 0;
-	end endtask
-	task TopImemwrite_offset(input [5:0] Aopc, input [5:0] Arsrc, input [4:0] Araddr); begin
-		Ropc <= Aopc; Ropt <= `OPTYPE_I; Tset_register(Arsrc, 0, Araddr, 0);
-		Rrout <= 0; Raux <= 0; Rimm <= WOimm; Raddr <= 0;
-	end endtask
-
-	wire _;
+		input [4:0] Arout, input [10:0] Aaux);
+		begin
+			Ropc <= Aopc; Ropt <= `OPTYPE_R;
+			Tset_register(Arar, Arav, Arbr, Arbv);
+			Rrout <= Arout; Raux <= Aaux; Rimm <= 0; Raddr <= 0; Rmem_read_addr <= 0;
+		end
+	endtask
+	task TopImemread_offset(input [5:0] Aopc, input [5:0] Arar, input [4:0] Arout);
+		begin
+			Ropc <= Aopc; Ropt <= `OPTYPE_I; Tset_register(Arar, 0, 0, 0);
+			Rrout <= Arout; Raux <= 0; Rimm <= WOimm; Raddr <= 0;
+		end
+	endtask
+	task TopImemwrite_offset(input [5:0] Aopc, input [5:0] Arsrc, input [4:0] Araddr);
+		begin
+			Ropc <= Aopc; Ropt <= `OPTYPE_I; Tset_register(Arsrc, 0, Araddr, 0);
+			Rrout <= 0; Raux <= 0; Rimm <= WOimm; Raddr <= 0;
+		end
+	endtask
 
 	always @ (posedge clk) begin
 		if (rst || Rhalt) begin
