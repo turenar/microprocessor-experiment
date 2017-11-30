@@ -76,7 +76,7 @@ module top_module(
 	assign reg_r2_index = pdc_rbr;
 	assign pdc_inst = mem_r1_data;
 	predecoder pdc0(
-		.clk(clk && (counter == 1 || rst)), .rst(rst), .halt(pdc_halt),
+		.clk(clk && (counter == 0 || rst)), .rst(rst), .halt(pdc_halt),
 		.instruction(mem_r1_data),
 		.opcode(pdc_opc), .optype(pdc_opt),
 		.rar(pdc_rar), .rav(pdc_rav), .rbr(pdc_rbr), .rbv(pdc_rbv),
