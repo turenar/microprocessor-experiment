@@ -57,6 +57,10 @@ module predecoder(
 		Ropc <= Aopc; Ropt <= `OPTYPE_I; Tset_register(Arar, 0, 0, 0);
 		Rrout <= Arout; Raux <= 0; Rimm <= WOimm; Raddr <= 0;
 	end endtask
+	task TopImemwrite_offset(input [5:0] Aopc, input [5:0] Arsrc, input [4:0] Araddr); begin
+		Ropc <= Aopc; Ropt <= `OPTYPE_I; Tset_register(Arsrc, 0, Araddr, 0);
+		Rrout <= 0; Raux <= 0; Rimm <= WOimm; Raddr <= 0;
+	end endtask
 
 	wire _;
 
@@ -80,6 +84,8 @@ module predecoder(
 				Rrar <= 0; Rrav <= 0; Rrbv <= 0; Rrbr <= 0; Rrout <= 0;
 			end else if(WOopc == `OPCODE_LW) begin
 				TopImemread_offset(WOopc, WOrs, WOrt);
+			end else if(WOopc == `OPCODE_SW) begin
+				TopImemwrite_offset(WOopc, WOrt, WOrs);
 			end else begin
 				/* illegal instruction */
 				Rhalt <= 1;

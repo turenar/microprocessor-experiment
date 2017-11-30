@@ -56,6 +56,14 @@ module executor(
 				Rreg_data <= mem_v;
 				Rpc_enabled <= 0;
 				Rmem_enabled <= 0;
+			end else if (opcode == `OPCODE_SW) begin
+				Ralu_enabled <= 0;
+				Rreg_index <= 0;
+				Rreg_data <= 0;
+				Rpc_enabled <= 0;
+				Rmem_enabled <= 1;
+				Rmem_addr <= rbv;
+				Rmem_data <= rav;
 			end else if (opcode == `OPCODE_HALT) begin
 				Rhalt <= 1;
 			end
