@@ -50,6 +50,12 @@ module executor(
 				Rreg_index <= rout;
 				Rpc_enabled <= 0;
 				Rmem_enabled <= 0;
+			end else if (opcode == `OPCODE_LW) begin
+				Ralu_enabled <= 0;
+				Rreg_index <= rout;
+				Rreg_data <= mem_v;
+				Rpc_enabled <= 0;
+				Rmem_enabled <= 0;
 			end else if (opcode == `OPCODE_HALT) begin
 				Rhalt <= 1;
 			end
