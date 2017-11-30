@@ -6,7 +6,7 @@ module executor(
 	output halt,
 	input [31:0] in_npc,
 	input [5:0] opcode,
-	input [1:0] optype, // 1=R, 2=I, 3=A
+	input [`OPTYPE_BITDEF] optype, // 1=R, 2=I, 3=A
 	input [31:0] rav,
 	input [31:0] rbv,
 	input [4:0] rout,
@@ -47,7 +47,13 @@ module executor(
 			Rreg_index <= 0; Rpc_enabled <= 0; Rmem_enabled <= 0;
 			Rreg_data <= 0; Rpc_data <= 0; Rmem_addr <= 0; Rmem_data <= 0;
 		end else if (!Rhalt) begin
-			if (opcode == `OPCODE_AUX) begin
+			if (optype == `OPTYPE_VJ) begin
+				Ralu_enabled <= 0;
+				Rreg_index <= 0;
+				Rpc_enabled <= rav != 0;
+				Rpc_data <= rbv;
+				Rmem_enabled <= 0;
+			end else if (opcode == `OPCODE_AUX) begin
 				Ralu_enabled <= 1;
 				Rreg_index <= rout;
 				Rpc_enabled <= 0;
@@ -66,6 +72,13 @@ module executor(
 				Rmem_enabled <= 1;
 				Rmem_addr <= rbv;
 				Rmem_data <= rav;
+			end else if (optype == `OPTYPE_VJ) begin
+				Ralu_enabled <= 0;
+				Rreg_index <= 0;
+				Rreg_data <= 0;
+				Rpc_enabled <= rav;
+				Rpc_data <= rbv;
+				Rmem_enabled <= 0;
 			end else if (opcode == `OPCODE_HALT) begin
 				Rhalt <= 1;
 			end

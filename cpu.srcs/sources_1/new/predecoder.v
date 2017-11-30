@@ -8,7 +8,7 @@ module predecoder(
 	input [31:0] instruction,
 	output [31:0] out_npc,
 	output [5:0] opcode,
-	output [1:0] optype, // 1=R, 2=I, 3=A
+	output [`OPTYPE_BITDEF] optype, // 1=R, 2=I, 3=A
 	output [4:0] rar,
 	output [31:0] rav,
 	output [4:0] rbr,
@@ -23,7 +23,7 @@ module predecoder(
 	reg Rhalt; assign halt = Rhalt;
 	reg Rnpc; assign out_npc = Rnpc;
 	reg [5:0] Ropc; assign opcode = Ropc;
-	reg [1:0] Ropt; assign optype = Ropt;
+	reg [`OPTYPE_BITDEF] Ropt; assign optype = Ropt;
 	reg [4:0] Rrar; assign rar = Rrar;
 	reg [31:0] Rrav; assign rav = Rrav;
 	reg [4:0] Rrbr; assign rbr = Rrbr;
@@ -72,6 +72,12 @@ module predecoder(
 			Rrout <= 0; Raux <= 0; Rimm <= WOimm; Raddr <= 0;
 		end
 	endtask
+	task TopIpass(input [5:0] Aopc, input [`OPTYPE_BITDEF] Aopt);
+		begin
+			Ropc <= Aopc; Ropt <= Aopt; Tset_register(WOrs, 0, WOrt, 0);
+			Rrout <= 0; Raux <= 0; Rimm <= WOimm; Raddr <= 0;
+		end
+	endtask
 
 	always @ (posedge clk) begin
 		if (rst || Rhalt) begin
@@ -97,6 +103,9 @@ module predecoder(
 				TopImemread_offset(WOopc, WOrs, WOrt);
 			end else if(WOopc == `OPCODE_SW) begin
 				TopImemwrite_offset(WOopc, WOrt, WOrs);
+			end else if(WOopc == `OPCODE_BEQ || WOopc == `OPCODE_BNE
+				|| WOopc == `OPCODE_BLT || WOopc == `OPCODE_BLE) begin
+				TopIpass(WOopc, `OPTYPE_VJ);
 			end else begin
 				/* illegal instruction */
 				Rhalt <= 1;

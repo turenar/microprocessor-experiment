@@ -5,7 +5,7 @@ module decoder(
 	input rst,
 	input [31:0] in_npc,
 	input [5:0] in_opc,
-	input [1:0] in_opt,
+	input [`OPTYPE_BITDEF] in_opt,
 	input [31:0] in_rav,
 	input [31:0] in_rbv,
 	input [4:0] in_rout,
@@ -16,7 +16,7 @@ module decoder(
 	input [31:0] in_mem_write_addr,
 	output [31:0] out_npc,
 	output [5:0] out_opc,
-	output [1:0] out_opt,
+	output [`OPTYPE_BITDEF] out_opt,
 	output [31:0] out_rav,
 	output [31:0] out_rbv,
 	output [4:0] out_rout,
@@ -40,14 +40,23 @@ module decoder(
 			Rrout <= 0; Raux <= 0; Rmem_read_addr <= 0;
 		end else begin
 			Rnpc <= in_npc;
-			Ropc <= in_opc; Ropt <= in_opt; Rrav <= in_rav; /* Rrbv <= in_rbv; */
+			Ropc <= in_opc; Ropt <= in_opt; /*Rrav <= in_rav; Rrbv <= in_rbv; */
 			Rrout <= in_rout; Raux <= in_aux;
 			if (in_opc == `OPCODE_LW) begin
-				Rmem_read_addr <= in_rav + `EXTSGN16to32(in_imm); Rrbv <= in_rbv;
+				Rmem_read_addr <= in_rav + `EXTSGN16to32(in_imm); Rrav <= in_rav; Rrbv <= in_rbv;
 			end else if (in_opc == `OPCODE_SW) begin
-				Rrbv <= in_rbv + `EXTSGN16to32(in_imm); Rmem_read_addr <= 0;
+				Rrbv <= in_rbv + `EXTSGN16to32(in_imm); Rrav <= in_rav; Rmem_read_addr <= 0;
+			end else if (in_opt == `OPTYPE_VJ) begin
+				case (in_opc)
+					`OPCODE_BEQ: Rrav <= (in_rav == in_rbv);
+					`OPCODE_BNE: Rrav <= (in_rav != in_rbv);
+					`OPCODE_BLT: Rrav <= (in_rav < in_rbv);
+					`OPCODE_BLE: Rrav <= (in_rav <= in_rbv);
+					// default: ;
+				endcase
+				Rrbv <= in_npc + `EXTSGN16to32(in_imm); Rmem_read_addr <= 0;
 			end else begin
-				Rmem_read_addr <= in_mem_read_addr; Rrbv <= in_rbv;
+				Rmem_read_addr <= in_mem_read_addr; Rrav <= in_rav; Rrbv <= in_rbv;
 			end
 		end
 	end

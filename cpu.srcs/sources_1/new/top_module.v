@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+`include "def.vh"
 //////////////////////////////////////////////////////////////////////////////////
 // Company:
 // Engineer:
@@ -68,7 +69,7 @@ module top_module(
 	wire [31:0] pdc_npc;
 	wire [31:0] pdc_inst;
 	wire [5:0] pdc_opc;
-	wire [1:0] pdc_opt;
+	wire [`OPTYPE_BITDEF] pdc_opt;
 	wire [4:0] pdc_rar, pdc_rbr, pdc_ror;
 	wire [31:0] pdc_rav, pdc_rbv;
 	wire [10:0] pdc_aux;
@@ -89,7 +90,7 @@ module top_module(
 	wire dec_halt;
 	wire [31:0] dec_npc;
 	wire [5:0] dec_opc;
-	wire [1:0] dec_opt;
+	wire [`OPTYPE_BITDEF] dec_opt;
 	wire [4:0] dec_ror;
 	wire [31:0] dec_in_rav, dec_in_rbv, dec_rav, dec_rbv;
 	wire [10:0] dec_aux;
