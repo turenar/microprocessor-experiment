@@ -1,5 +1,6 @@
 module writeback(
 	input clk, input rst,
+	input [31:0] in_npc,
 	input [4:0] in_reg_index,
 	input [31:0] in_reg_data,
 	input in_pc_enabled,

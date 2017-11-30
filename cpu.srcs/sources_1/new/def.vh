@@ -1,3 +1,5 @@
+`define PC_ILLEGAL 32'hffff_ffff
+
 `define OPTYPE_R 2'b01
 `define OPTYPE_I 2'b10
 `define OPTYPE_A 2'b11

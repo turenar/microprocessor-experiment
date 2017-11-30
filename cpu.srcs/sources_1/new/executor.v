@@ -4,6 +4,7 @@ module executor(
 	input clk,
 	input rst,
 	output halt,
+	input [31:0] in_npc,
 	input [5:0] opcode,
 	input [1:0] optype, // 1=R, 2=I, 3=A
 	input [31:0] rav,
@@ -11,6 +12,7 @@ module executor(
 	input [4:0] rout,
 	input [10:0] aux,
 	input [31:0] mem_v,
+	output [31:0] out_npc,
 	output [4:0] out_reg_index,
 	output [31:0] out_reg_data,
 	output out_pc_enabled,

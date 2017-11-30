@@ -4,7 +4,9 @@ module predecoder(
 	input clk,
 	input rst,
 	output halt,
+	input [31:0] in_npc,
 	input [31:0] instruction,
+	output [31:0] out_npc,
 	output [5:0] opcode,
 	output [1:0] optype, // 1=R, 2=I, 3=A
 	output [4:0] rar,
@@ -19,6 +21,7 @@ module predecoder(
 	);
 
 	reg Rhalt; assign halt = Rhalt;
+	reg Rnpc; assign out_npc = Rnpc;
 	reg [5:0] Ropc; assign opcode = Ropc;
 	reg [1:0] Ropt; assign optype = Ropt;
 	reg [4:0] Rrar; assign rar = Rrar;
@@ -75,9 +78,11 @@ module predecoder(
 			if (rst) begin
 				Rhalt <= 0;
 			end
+			Rnpc <= `PC_ILLEGAL;
 			Ropc <= 0; Ropt <= 0; Rrar <= 0; Rrav <= 0; Rrbr <= 0; Rrbv <= 0;
 			Rrout <= 0; Raux <= 0; Rmem_read_addr <= 0;
 		end else if(!Rhalt) begin
+			Rnpc <= in_npc;
 			if(WOopc == `OPCODE_AUX) begin
 				TopR(WOopc, WOrs, 0, WOrt, 0, WOrd, WOaux);
 			end else if(WOopc == `OPCODE_ADDI) begin

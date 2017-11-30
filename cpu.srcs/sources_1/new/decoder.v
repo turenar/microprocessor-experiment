@@ -3,6 +3,7 @@
 module decoder(
 	input clk,
 	input rst,
+	input [31:0] in_npc,
 	input [5:0] in_opc,
 	input [1:0] in_opt,
 	input [31:0] in_rav,
@@ -13,6 +14,7 @@ module decoder(
 	input [25:0] in_addr,
 	input [31:0] in_mem_read_addr,
 	input [31:0] in_mem_write_addr,
+	output [31:0] out_npc,
 	output [5:0] out_opc,
 	output [1:0] out_opt,
 	output [31:0] out_rav,
@@ -22,6 +24,7 @@ module decoder(
 	output [31:0] out_mem_read_addr
 	);
 
+	reg [31:0] Rnpc; assign out_npc = Rnpc;
 	reg [5:0] Ropc; assign out_opc = Ropc;
 	reg [1:0] Ropt; assign out_opt = Ropt;
 	reg [31:0] Rrav; assign out_rav = Rrav;
@@ -32,9 +35,11 @@ module decoder(
 
 	always @ (posedge clk) begin
 		if (rst) begin
+			Rnpc <= `PC_ILLEGAL;
 			Ropc <= 0; Ropt <= 0; Rrav <= 0; Rrbv <= 0;
 			Rrout <= 0; Raux <= 0; Rmem_read_addr <= 0;
 		end else begin
+			Rnpc <= in_npc;
 			Ropc <= in_opc; Ropt <= in_opt; Rrav <= in_rav; /* Rrbv <= in_rbv; */
 			Rrout <= in_rout; Raux <= in_aux;
 			if (in_opc == `OPCODE_LW) begin
