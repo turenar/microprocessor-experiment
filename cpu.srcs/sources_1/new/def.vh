@@ -1,3 +1,5 @@
+`define EXTSGN16to32(_val_) { {16{_val_[15]}}, _val_}
+
 `define PC_ILLEGAL 32'hffff_ffff
 
 `define OPTYPE_R 2'b01

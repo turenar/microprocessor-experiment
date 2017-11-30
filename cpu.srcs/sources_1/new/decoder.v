@@ -43,9 +43,9 @@ module decoder(
 			Ropc <= in_opc; Ropt <= in_opt; Rrav <= in_rav; /* Rrbv <= in_rbv; */
 			Rrout <= in_rout; Raux <= in_aux;
 			if (in_opc == `OPCODE_LW) begin
-				Rmem_read_addr <= in_rav + in_imm; Rrbv <= in_rbv;
+				Rmem_read_addr <= in_rav + `EXTSGN16to32(in_imm); Rrbv <= in_rbv;
 			end else if (in_opc == `OPCODE_SW) begin
-				Rrbv <= in_rbv + in_imm; Rmem_read_addr <= 0;
+				Rrbv <= in_rbv + `EXTSGN16to32(in_imm); Rmem_read_addr <= 0;
 			end else begin
 				Rmem_read_addr <= in_mem_read_addr; Rrbv <= in_rbv;
 			end

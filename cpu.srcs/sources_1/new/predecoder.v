@@ -87,7 +87,7 @@ module predecoder(
 				TopR(WOopc, WOrs, 0, WOrt, 0, WOrd, WOaux);
 			end else if(WOopc == `OPCODE_ADDI) begin
 				TopR(`OPCODE_AUX, WOrs, 0, 0,
-					/* Arbv */{ {16{WOimm[15]}}, WOimm},
+					/* Arbv */ `EXTSGN16to32(WOimm),
 					WOrt, 0);
 			end else if(WOopc == `OPCODE_HALT) begin
 				Ropc <= WOopc;
