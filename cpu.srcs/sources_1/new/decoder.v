@@ -43,8 +43,10 @@ module decoder(
 	wire [5:0] WauxV; assign WauxV = Raux[5:0];
 
 	always @ (posedge clk) begin
-		if(rst) begin
-			Rhalt <= 0;
+		if (rst || Rhalt) begin
+			if (rst) begin
+				Rhalt <= 0;
+			end
 			Ropc <= 0; Ropt <= 0; Rrar <= 0; Rrav <= 0; Rrbr <= 0; Rrbv <= 0;
 			Rrout <= 0; Raux <= 0; Rimm <= 0; Raddr <= 0; Rmem_read_addr <= 0;
 		end else if(!Rhalt) begin
@@ -64,6 +66,10 @@ module decoder(
 				Rrout <= WOrt;
 				Raux <= 0;
 			end else if(WOopc == `OPCODE_HALT) begin
+				Ropc <= WOopc;
+				Ropt <= `OPTYPE_A;
+				Rrar <= 0; Rrav <= 0; Rrbv <= 0; Rrbr <= 0; Rrout <= 0;
+			end else begin
 				Rhalt <= 1;
 			end
 		end

@@ -39,9 +39,13 @@ module executor(
 		.ra(rav), .rb(rbv), .rout(Walu_routv));
 
 	always @ (posedge clk) begin
-		if (rst) begin
-			Rhalt <= 0; Ralu_enabled <= 0;
+		if (rst || Rhalt) begin
+			if (rst) begin
+				Rhalt <= 0;
+			end
+			Ralu_enabled <= 0;
 			Rreg_index <= 0; Rpc_enabled <= 0; Rmem_enabled <= 0;
+			Rreg_data <= 0; Rpc_data <= 0; Rmem_addr <= 0; Rmem_data <= 0;
 		end else if (!Rhalt) begin
 			if (opcode == `OPCODE_AUX) begin
 				Ralu_enabled <= 1;
