@@ -38,6 +38,47 @@ module executor(
 		.clk(clk), .aux(aux),
 		.ra(rav), .rb(rbv), .rout(Walu_routv));
 
+	task Tzalu;
+		begin
+			Ralu_enabled <= 0;
+		end
+	endtask
+	task Tualu(input Aenabled, input[4:0] Areg_index);
+		begin
+			Ralu_enabled = Aenabled; Rreg_index <= Areg_index;
+		end
+	endtask
+	task Tzreg;
+		begin
+			Rreg_index <= 0; // Rreg_data <= `PC_ILLEGAL;
+		end
+	endtask
+	task Tureg(input[4:0] Areg_index, input[31:0] Areg_data);
+		begin
+			Rreg_index <= Areg_index; Rreg_data <= Areg_data;
+		end
+	endtask
+	task Tzpc;
+		begin
+			Rpc_enabled <= 0; // Rpc_addr <= `PC_ILLEGAL;
+		end
+	endtask
+	task Tupc(input Apc_enabled, input[31:0] Apc_addr);
+		begin
+			Rpc_enabled <= Apc_enabled; Rpc_addr <= Apc_addr;
+		end
+	endtask
+	task Tzmem;
+		begin
+			Rmem_enabled <= 0; // Rmem_addr <= 0; Rmem_data <= 0;
+		end
+	endtask
+	task Tumem(input Amem_enabled, input[31:0] Amem_addr, input[31:0] Amem_data);
+		begin
+			Rmem_enabled <= Amem_enabled; Rmem_addr <= Amem_addr; Rmem_data <= Amem_data;
+		end
+	endtask
+
 	always @ (posedge clk) begin
 		if (rst || Rhalt) begin
 			if (rst) begin
@@ -48,44 +89,21 @@ module executor(
 			Rreg_data <= 0; Rpc_addr <= 0; Rmem_addr <= 0; Rmem_data <= 0;
 		end else if (!Rhalt) begin
 			if (optype == `OPTYPE_VJ) begin
-				Ralu_enabled <= 0;
-				Rreg_index <= 0;
-				Rpc_enabled <= rav != 0;
-				Rpc_addr <= rbv;
-				Rmem_enabled <= 0;
+				Tzalu; Tzreg; Tzmem;
+				Tupc(rav != 0, rbv);
 			end else if (opcode == `OPCODE_AUX) begin
-				Ralu_enabled <= 1;
-				Rreg_index <= rout;
-				Rpc_enabled <= 0;
-				Rmem_enabled <= 0;
+				Tzpc; Tzmem;
+				Tualu(1, rout);
 			end else if (opcode == `OPCODE_LW) begin
-				Ralu_enabled <= 0;
-				Rreg_index <= rout;
-				Rreg_data <= mem_v;
-				Rpc_enabled <= 0;
-				Rmem_enabled <= 0;
+				Tzalu; Tzpc; Tzmem;
+				Tureg(rout, mem_v);
 			end else if (opcode == `OPCODE_SW) begin
-				Ralu_enabled <= 0;
-				Rreg_index <= 0;
-				Rreg_data <= 0;
-				Rpc_enabled <= 0;
-				Rmem_enabled <= 1;
-				Rmem_addr <= rbv;
-				Rmem_data <= rav;
-			end else if (optype == `OPTYPE_VJ) begin
-				Ralu_enabled <= 0;
-				Rreg_index <= 0;
-				Rreg_data <= 0;
-				Rpc_enabled <= rav;
-				Rpc_addr <= rbv;
-				Rmem_enabled <= 0;
+				Tzalu; Tzreg; Tzpc;
+				Tumem(1, rbv, rav);
 			end else if (opcode == `OPCODE_JAL) begin
-				Ralu_enabled <= 0;
-				Rreg_index <= 31;
-				Rreg_data <= in_npc + 4;
-				Rpc_enabled <= 1;
-				Rpc_addr <= rav;
-				Rmem_enabled <= 0;
+				Tzalu; Tzmem;
+				Tureg(31, in_npc+4);
+				Tupc(1, rav);
 			end else if (opcode == `OPCODE_HALT) begin
 				Rhalt <= 1;
 			end
