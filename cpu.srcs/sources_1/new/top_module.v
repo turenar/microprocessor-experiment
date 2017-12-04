@@ -140,7 +140,7 @@ module top_module(
 		.out_mem_data(mem_w_data));
 
 	assign halt = pdc_halt || exec_halt;
-	assign clk = sysclk | halt;
+	assign clk = sysclk & ~halt;
 
 	always @ (posedge clk) begin
 		if(rst) begin
