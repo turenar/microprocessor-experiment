@@ -26,7 +26,7 @@ module decoder(
 
 	reg [31:0] Rnpc; assign out_npc = Rnpc;
 	reg [5:0] Ropc; assign out_opc = Ropc;
-	reg [1:0] Ropt; assign out_opt = Ropt;
+	reg [`OPTYPE_BITDEF] Ropt; assign out_opt = Ropt;
 	reg [31:0] Rrav; assign out_rav = Rrav;
 	reg [31:0] Rrbv; assign out_rbv = Rrbv;
 	reg [4:0] Rrout; assign out_rout = Rrout;
@@ -47,14 +47,20 @@ module decoder(
 			end else if (in_opc == `OPCODE_SW) begin
 				Rrbv <= in_rbv + `EXTSGN16to32(in_imm); Rrav <= in_rav; Rmem_read_addr <= 0;
 			end else if (in_opt == `OPTYPE_VJ) begin
-				case (in_opc)
-					`OPCODE_BEQ: Rrav <= (in_rav == in_rbv);
-					`OPCODE_BNE: Rrav <= (in_rav != in_rbv);
-					`OPCODE_BLT: Rrav <= (in_rav < in_rbv);
-					`OPCODE_BLE: Rrav <= (in_rav <= in_rbv);
-					// default: ;
-				endcase
-				Rrbv <= in_npc + `EXTSGN16to32(in_imm); Rmem_read_addr <= 0;
+				if (in_opc == `OPCODE_J) begin
+					Rrav <= 1;
+					Rrbv <= in_addr;
+					Rmem_read_addr <= 0;
+				end else begin
+					case (in_opc)
+						`OPCODE_BEQ: Rrav <= (in_rav == in_rbv);
+						`OPCODE_BNE: Rrav <= (in_rav != in_rbv);
+						`OPCODE_BLT: Rrav <= (in_rav < in_rbv);
+						`OPCODE_BLE: Rrav <= (in_rav <= in_rbv);
+						// default: ;
+					endcase
+					Rrbv <= in_npc + 4 + `EXTSGN16to32(in_imm); Rmem_read_addr <= 0;
+				end
 			end else begin
 				Rmem_read_addr <= in_mem_read_addr; Rrav <= in_rav; Rrbv <= in_rbv;
 			end

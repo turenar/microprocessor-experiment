@@ -45,12 +45,12 @@ module top_module(
 
 	wire ic_set_enabled;
 	wire ic_next_enabled;
-	assign ic_set_enabled = 0; assign ic_next_enabled = counter == 3;
+	assign ic_next_enabled = counter == 3;
 	wire [31:0] ic_set_addr;
 	wire [31:0] ic_next_addr;
 
 	instruction_counter ic0(
-		.clk(clk), .rst(rst),
+		.clk(~clk), .rst(rst),
 		.set_enabled(ic_set_enabled), .next_enabled(ic_next_enabled),
 		.set_addr(ic_set_addr), .pc_addr(ic_next_addr));
 	assign mem_r1_addr = ic_next_addr;

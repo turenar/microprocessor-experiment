@@ -78,6 +78,12 @@ module predecoder(
 			Rrout <= 0; Raux <= 0; Rimm <= WOimm; Raddr <= 0;
 		end
 	endtask
+	task TopApass(input [5:0] Aopc, input [`OPTYPE_BITDEF] Aopt);
+		begin
+			Ropc <= Aopc; Ropt <= Aopt; Tset_register(WOrs, 0, WOrt, 0);
+			Rrout <= 0; Raux <= 0; Rimm <= 0; Raddr <= WOaddr;
+		end
+	endtask
 
 	always @ (posedge clk) begin
 		if (rst || Rhalt) begin
@@ -106,6 +112,8 @@ module predecoder(
 			end else if(WOopc == `OPCODE_BEQ || WOopc == `OPCODE_BNE
 				|| WOopc == `OPCODE_BLT || WOopc == `OPCODE_BLE) begin
 				TopIpass(WOopc, `OPTYPE_VJ);
+			end else if(WOopc == `OPCODE_J) begin
+				TopApass(WOopc, `OPTYPE_VJ);
 			end else begin
 				/* illegal instruction */
 				Rhalt <= 1;
