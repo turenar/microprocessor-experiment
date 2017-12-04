@@ -61,6 +61,8 @@ module decoder(
 					endcase
 					Rrbv <= in_npc + 4 + `EXTSGN16to32(in_imm); Rmem_read_addr <= 0;
 				end
+			end else if (in_opc == `OPCODE_JAL) begin
+				Rrav <= in_addr; Rrbv <= 0; Rmem_read_addr <= 0;
 			end else begin
 				Rmem_read_addr <= in_mem_read_addr; Rrav <= in_rav; Rrbv <= in_rbv;
 			end

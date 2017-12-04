@@ -23,6 +23,7 @@
 `define OPCODE_BLT	6'b10_0010
 `define OPCODE_BLE	6'b10_0011
 `define OPCODE_J	6'b10_1000
+`define OPCODE_JAL	6'b10_1001
 `define OPCODE_HALT 6'b11_1111
 
 `define ALUC_ADD	6'h00

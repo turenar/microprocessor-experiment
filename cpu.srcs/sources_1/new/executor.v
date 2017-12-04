@@ -79,6 +79,13 @@ module executor(
 				Rpc_enabled <= rav;
 				Rpc_addr <= rbv;
 				Rmem_enabled <= 0;
+			end else if (opcode == `OPCODE_JAL) begin
+				Ralu_enabled <= 0;
+				Rreg_index <= 31;
+				Rreg_data <= in_npc + 4;
+				Rpc_enabled <= 1;
+				Rpc_addr <= rav;
+				Rmem_enabled <= 0;
 			end else if (opcode == `OPCODE_HALT) begin
 				Rhalt <= 1;
 			end

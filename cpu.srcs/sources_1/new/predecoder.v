@@ -80,7 +80,7 @@ module predecoder(
 	endtask
 	task TopApass(input [5:0] Aopc, input [`OPTYPE_BITDEF] Aopt);
 		begin
-			Ropc <= Aopc; Ropt <= Aopt; Tset_register(WOrs, 0, WOrt, 0);
+			Ropc <= Aopc; Ropt <= Aopt; Tset_register(0, 0, 0, 0);
 			Rrout <= 0; Raux <= 0; Rimm <= 0; Raddr <= WOaddr;
 		end
 	endtask
@@ -130,6 +130,8 @@ module predecoder(
 				TopIpass(WOopc, `OPTYPE_VJ);
 			end else if(WOopc == `OPCODE_J) begin
 				TopApass(WOopc, `OPTYPE_VJ);
+			end else if(WOopc == `OPCODE_JAL) begin
+				TopApass(WOopc, `OPTYPE_A); // not simple jump!
 			end else begin
 				/* illegal instruction */
 				Rhalt <= 1;
