@@ -100,7 +100,23 @@ module predecoder(
 			end else if(WOopc == `OPCODE_ADDI) begin
 				TopR(`OPCODE_AUX, WOrs, 0, 0,
 					/* Arbv */ `EXTSGN16to32(WOimm),
-					WOrt, 0);
+					WOrt, `ALUC_ADD);
+			end else if(WOopc == `OPCODE_LUI) begin
+				TopR(`OPCODE_AUX, 0, 0, 0,
+					/* Arbv */ WOimm << 16,
+					WOrt, `ALUC_OR);
+			end else if(WOopc == `OPCODE_ANDI) begin
+				TopR(`OPCODE_AUX, WOrs, 0, 0,
+					/* Arbv */ `EXTZER16to32(WOimm),
+					WOrt, `ALUC_AND);
+			end else if(WOopc == `OPCODE_ORI) begin
+				TopR(`OPCODE_AUX, WOrs, 0, 0,
+					/* Arbv */ `EXTZER16to32(WOimm),
+					WOrt, `ALUC_OR);
+			end else if(WOopc == `OPCODE_XORI) begin
+				TopR(`OPCODE_AUX, WOrs, 0, 0,
+					/* Arbv */ `EXTZER16to32(WOimm),
+					WOrt, `ALUC_XOR);
 			end else if(WOopc == `OPCODE_HALT) begin
 				Ropc <= WOopc;
 				Ropt <= `OPTYPE_A;

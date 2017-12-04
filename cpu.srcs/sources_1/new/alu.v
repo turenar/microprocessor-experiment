@@ -1,3 +1,5 @@
+`include "def.vh"
+
 module alu(
 	input clk,
 	input [10:0] aux,
@@ -12,15 +14,15 @@ module alu(
 
 	always @(posedge clk) begin
 		case (aux_type)
-			6'h00:	result <= ra + rb;
-			6'h02:	result <= ra - rb;
-			6'h08:	result <= ra & rb;
-			6'h09:	result <= ra | rb;
-			6'h0a:	result <= ra ^ rb;
-			6'h0b:	result <= ~(ra | rb);
-			6'h10:	result <= ra << shift_width;
-			6'h11:	result <= ra >> shift_width;
-			6'h12:	result <= ra >>> shift_width;
+			`ALUC_ADD:	result <= ra + rb;
+			`ALUC_SUB:	result <= ra - rb;
+			`ALUC_AND:	result <= ra & rb;
+			`ALUC_OR:	result <= ra | rb;
+			`ALUC_XOR:	result <= ra ^ rb;
+			`ALUC_NOR:	result <= ~(ra | rb);
+			`ALUC_SLL:	result <= ra << shift_width;
+			`ALUC_SRL:	result <= ra >> shift_width;
+			`ALUC_SRA:	result <= ra >>> shift_width;
 		endcase
 	end
 
