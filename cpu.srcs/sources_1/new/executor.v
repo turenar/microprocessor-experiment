@@ -16,7 +16,7 @@ module executor(
 	output [4:0] out_reg_index,
 	output [31:0] out_reg_data,
 	output out_pc_enabled,
-	output [31:0] out_pc_data,
+	output [31:0] out_pc_addr,
 	output out_mem_enabled,
 	output [31:0] out_mem_addr,
 	output [31:0] out_mem_data
@@ -28,7 +28,7 @@ module executor(
 	reg [4:0] Rreg_index; assign out_reg_index = Rreg_index;
 	reg [31:0] Rreg_data;
 	reg Rpc_enabled; assign out_pc_enabled = Rpc_enabled;
-	reg [31:0] Rpc_data; assign out_pc_data = Rpc_data;
+	reg [31:0] Rpc_addr; assign out_pc_addr = Rpc_addr;
 	reg Rmem_enabled; assign out_mem_enabled = Rmem_enabled;
 	reg [31:0] Rmem_addr; assign out_mem_addr = Rmem_addr;
 	reg [31:0] Rmem_data; assign out_mem_data = Rmem_data;
@@ -45,13 +45,13 @@ module executor(
 			end
 			Ralu_enabled <= 0;
 			Rreg_index <= 0; Rpc_enabled <= 0; Rmem_enabled <= 0;
-			Rreg_data <= 0; Rpc_data <= 0; Rmem_addr <= 0; Rmem_data <= 0;
+			Rreg_data <= 0; Rpc_addr <= 0; Rmem_addr <= 0; Rmem_data <= 0;
 		end else if (!Rhalt) begin
 			if (optype == `OPTYPE_VJ) begin
 				Ralu_enabled <= 0;
 				Rreg_index <= 0;
 				Rpc_enabled <= rav != 0;
-				Rpc_data <= rbv;
+				Rpc_addr <= rbv;
 				Rmem_enabled <= 0;
 			end else if (opcode == `OPCODE_AUX) begin
 				Ralu_enabled <= 1;
@@ -77,7 +77,7 @@ module executor(
 				Rreg_index <= 0;
 				Rreg_data <= 0;
 				Rpc_enabled <= rav;
-				Rpc_data <= rbv;
+				Rpc_addr <= rbv;
 				Rmem_enabled <= 0;
 			end else if (opcode == `OPCODE_HALT) begin
 				Rhalt <= 1;

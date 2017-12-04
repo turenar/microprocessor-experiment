@@ -114,7 +114,7 @@ module top_module(
 	wire [4:0] exec_reg_index;
 	wire [31:0] exec_reg_data;
 	wire exec_pc_enabled;
-	wire [31:0] exec_pc_data;
+	wire [31:0] exec_pc_addr;
 	wire exec_mem_enabled;
 	wire [31:0] exec_mem_addr;
 	wire [31:0] exec_mem_data;
@@ -125,17 +125,17 @@ module top_module(
 		.rav(dec_rav), .rbv(dec_rbv), .rout(dec_ror),
 		.aux(dec_aux), .mem_v(mem_r2_data),
 		.out_npc(exec_npc), .out_reg_index(exec_reg_index), .out_reg_data(exec_reg_data),
-		.out_pc_enabled(exec_pc_enabled), .out_mem_enabled(exec_mem_enabled),
+		.out_pc_enabled(exec_pc_enabled), .out_pc_addr(exec_pc_addr), .out_mem_enabled(exec_mem_enabled),
 		.out_mem_addr(exec_mem_addr), .out_mem_data(exec_mem_data));
 
 	writeback wb0(
 		.clk(clk && (counter == 3 || rst)), .rst(rst),
 		.in_npc(exec_npc), .in_reg_index(exec_reg_index), .in_reg_data(exec_reg_data),
-		.in_pc_enabled(exec_pc_enabled), .in_pc_data(exec_pc_data),
+		.in_pc_enabled(exec_pc_enabled), .in_pc_addr(exec_pc_addr),
 		.in_mem_enabled(exec_mem_enabled), .in_mem_addr(exec_mem_addr),
 		.in_mem_data(exec_mem_data),
 		.out_reg_index(reg_w_index), .out_reg_data(reg_w_data),
-		.out_pc_enabled(ic_set_enabled), .out_pc_data(ic_set_addr),
+		.out_pc_enabled(ic_set_enabled), .out_pc_addr(ic_set_addr),
 		.out_mem_enabled(mem_wenabled), .out_mem_addr(mem_w_addr),
 		.out_mem_data(mem_w_data));
 
