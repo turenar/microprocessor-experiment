@@ -10,7 +10,7 @@ module register(
 	);
 	reg [4:0] r1_i;
 	reg [4:0] r2_i;
-	reg [31:0] files [0:15];
+	reg [31:0] files [0:31];
 	wire [31:0] r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15;
 
 	// debug
@@ -33,7 +33,7 @@ module register(
 	integer i;
 	always @(posedge clk or posedge rst) begin
 		if(rst) begin
-			for (i = 0; i<16; i=i+1) begin
+			for (i = 0; i<32; i=i+1) begin
 				files[i] = 0;
 			end
 		end else begin
