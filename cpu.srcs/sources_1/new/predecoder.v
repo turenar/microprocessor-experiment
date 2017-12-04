@@ -132,6 +132,8 @@ module predecoder(
 				TopApass(WOopc, `OPTYPE_VJ);
 			end else if(WOopc == `OPCODE_JAL) begin
 				TopApass(WOopc, `OPTYPE_A); // not simple jump!
+			end else if(WOopc == `OPCODE_JR) begin
+				TopR(WOopc, WOrs, 0, 0, 0, 0, `ALUC_NONE);
 			end else begin
 				/* illegal instruction */
 				Rhalt <= 1;

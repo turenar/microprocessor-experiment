@@ -104,6 +104,9 @@ module executor(
 				Tzalu; Tzmem;
 				Tureg(31, in_npc+4);
 				Tupc(1, rav);
+			end else if (opcode == `OPCODE_JR) begin
+				Tzalu; Tzreg; Tzmem;
+				Tupc(1, rav);
 			end else if (opcode == `OPCODE_HALT) begin
 				Rhalt <= 1;
 			end
