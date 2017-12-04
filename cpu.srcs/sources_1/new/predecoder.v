@@ -21,7 +21,7 @@ module predecoder(
 	);
 
 	reg Rhalt; assign halt = Rhalt;
-	reg Rnpc; assign out_npc = Rnpc;
+	reg [31:0] Rnpc; assign out_npc = Rnpc;
 	reg [5:0] Ropc; assign opcode = Ropc;
 	reg [`OPTYPE_BITDEF] Ropt; assign optype = Ropt;
 	reg [4:0] Rrar; assign rar = Rrar;
