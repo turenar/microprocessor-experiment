@@ -39,7 +39,7 @@ module executor(
 	assign out_reg_data = Ralu_enabled ? Walu_routv : Rreg_data;
 
 	alu alu0(
-		.clk(clk), .rst(rst), .errno(Walu_errno), .aux(Ralu_enabled ? aux : 31),
+		.clk(clk), .rst(rst), .errno(Walu_errno), .aux(Ralu_enabled ? aux : 11'd31),
 		.ra(rav), .rb(rbv), .rout(Walu_routv));
 
 	task Tzalu;
