@@ -3,7 +3,7 @@
 module predecoder(
 	input clk,
 	input rst,
-	output halt,
+	output [`ERRC_BITDEF] errno,
 	input [31:0] in_npc,
 	input [31:0] instruction,
 	output [31:0] out_npc,
@@ -20,7 +20,7 @@ module predecoder(
 	output [31:0] mem_read_addr
 	);
 
-	reg Rhalt; assign halt = Rhalt;
+	reg [`ERRC_BITDEF] Rerrno; assign errno = Rerrno;
 	reg [31:0] Rnpc; assign out_npc = Rnpc;
 	reg [5:0] Ropc; assign opcode = Ropc;
 	reg [`OPTYPE_BITDEF] Ropt; assign optype = Ropt;
@@ -85,15 +85,15 @@ module predecoder(
 		end
 	endtask
 
-	always @ (posedge clk) begin
-		if (rst || Rhalt) begin
+	always @ (posedge clk or posedge rst) begin
+		if (rst || Rerrno) begin
 			if (rst) begin
-				Rhalt <= 0;
+				Rerrno <= 0;
 			end
 			Rnpc <= `PC_ILLEGAL;
 			Ropc <= 0; Ropt <= 0; Rrar <= 0; Rrav <= 0; Rrbr <= 0; Rrbv <= 0;
 			Rrout <= 0; Raux <= 0; Rmem_read_addr <= 0;
-		end else if(!Rhalt) begin
+		end else if(Rerrno == 0) begin
 			Rnpc <= in_npc;
 			if(WOopc == `OPCODE_AUX) begin
 				TopR(WOopc, WOrs, 0, WOrt, 0, WOrd, WOaux);
@@ -136,7 +136,7 @@ module predecoder(
 				TopR(WOopc, WOrs, 0, 0, 0, 0, `ALUC_NONE);
 			end else begin
 				/* illegal instruction */
-				Rhalt <= 1;
+				Rerrno <= `ERRC_ILL;
 			end
 		end
 	end

@@ -33,8 +33,6 @@ module top_module(
 	wire cpu_clk; assign cpu_clk = counter == 0;
 	wire rst; assign rst = ~cpu_resetn;
 	wire halt;
-	assign led[6:0] = 0;
-	assign led[7] = halt;
 
 	wire mem_wenabled;
 	wire [31:0] mem_r1_addr, mem_r2_addr, mem_w_addr;
@@ -65,7 +63,7 @@ module top_module(
 		.r2_index(reg_r2_index), .r2_data(reg_r2_data),
 		.w_index(reg_w_index), .w_data(reg_w_data));
 
-	wire pdc_halt;
+	wire [`ERRC_BITDEF] pdc_errno;
 	wire [31:0] pdc_npc;
 	wire [31:0] pdc_inst;
 	wire [5:0] pdc_opc;
@@ -80,14 +78,14 @@ module top_module(
 	assign reg_r2_index = pdc_rbr;
 	assign pdc_inst = mem_r1_data;
 	predecoder pdc0(
-		.clk(clk && (counter == 0 || rst)), .rst(rst), .halt(pdc_halt),
+		.clk(clk && (counter == 0 || rst)), .rst(rst), .errno(pdc_errno),
 		.in_npc(mem_r1_addr), .instruction(mem_r1_data),
 		.out_npc(pdc_npc), .opcode(pdc_opc), .optype(pdc_opt),
 		.rar(pdc_rar), .rav(pdc_rav), .rbr(pdc_rbr), .rbv(pdc_rbv),
 		.rout(pdc_ror), .aux(pdc_aux), .imm(pdc_imm), .addr(pdc_addr),
 		.mem_read_addr(pdc_read_mem_addr));
 
-	wire dec_halt;
+	wire [`ERRC_BITDEF] dec_errno;
 	wire [31:0] dec_npc;
 	wire [5:0] dec_opc;
 	wire [`OPTYPE_BITDEF] dec_opt;
@@ -99,6 +97,7 @@ module top_module(
 
 	decoder dec0(
 		.clk(clk && (counter == 1 || rst)), .rst(rst),
+		.in_errno(pdc_errno), .out_errno(dec_errno),
 		.in_npc(pdc_npc), .in_opc(pdc_opc), .in_opt(pdc_opt),
 		.in_rav(dec_in_rav), .in_rbv(dec_in_rbv),
 		.in_rout(pdc_ror), .in_aux(pdc_aux), .in_imm(pdc_imm), .in_addr(pdc_addr),
@@ -108,7 +107,7 @@ module top_module(
 		.out_rout(dec_ror), .out_aux(dec_aux),
 		.out_mem_read_addr(mem_r2_addr));
 
-	wire exec_halt;
+	wire [`ERRC_BITDEF] exec_errno;
 	wire [31:0] exec_npc;
 	wire [31:0] exec_rav, exec_rbv;
 	wire [4:0] exec_reg_index;
@@ -120,7 +119,8 @@ module top_module(
 	wire [31:0] exec_mem_data;
 
 	executor exec0(
-		.clk(clk && (counter == 2 || rst)), .rst(rst), .halt(exec_halt),
+		.clk(clk && (counter == 2 || rst)), .rst(rst),
+		.in_errno(dec_errno), .out_errno(exec_errno),
 		.in_npc(dec_npc), .opcode(dec_opc), .optype(dec_opt),
 		.rav(dec_rav), .rbv(dec_rbv), .rout(dec_ror),
 		.aux(dec_aux), .mem_v(mem_r2_data),
@@ -128,8 +128,11 @@ module top_module(
 		.out_pc_enabled(exec_pc_enabled), .out_pc_addr(exec_pc_addr), .out_mem_enabled(exec_mem_enabled),
 		.out_mem_addr(exec_mem_addr), .out_mem_data(exec_mem_data));
 
+	wire [`ERRC_BITDEF] wb_errno;
+
 	writeback wb0(
 		.clk(clk && (counter == 3 || rst)), .rst(rst),
+		.in_errno(exec_errno), .out_errno(wb_errno),
 		.in_npc(exec_npc), .in_reg_index(exec_reg_index), .in_reg_data(exec_reg_data),
 		.in_pc_enabled(exec_pc_enabled), .in_pc_addr(exec_pc_addr),
 		.in_mem_enabled(exec_mem_enabled), .in_mem_addr(exec_mem_addr),
@@ -139,10 +142,12 @@ module top_module(
 		.out_mem_enabled(mem_wenabled), .out_mem_addr(mem_w_addr),
 		.out_mem_data(mem_w_data));
 
-	assign halt = pdc_halt || exec_halt;
+	assign halt = wb_errno != `ERRC_NOERR;
 	assign clk = sysclk & ~halt;
+	assign led[7] = wb_errno != 0;
+	assign led[6:0] = 7'b0 | wb_errno;
 
-	always @ (posedge clk) begin
+	always @ (posedge clk or posedge rst) begin
 		if(rst) begin
 			counter <= 0;
 		end else begin

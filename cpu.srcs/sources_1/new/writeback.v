@@ -1,5 +1,10 @@
+`include "def.vh"
+
 module writeback(
 	input clk, input rst,
+	input [`ERRC_BITDEF] in_errno,
+	output halt,
+	output [`ERRC_BITDEF] out_errno,
 	input [31:0] in_npc,
 	input [4:0] in_reg_index,
 	input [31:0] in_reg_data,
@@ -17,6 +22,7 @@ module writeback(
 	output [31:0] out_mem_data
 	);
 
+	reg [`ERRC_BITDEF] Rerrno; assign out_errno = Rerrno;
 	reg [4:0] Rreg_index; assign out_reg_index = Rreg_index;
 	reg [31:0] Rreg_data; assign out_reg_data = Rreg_data;
 	reg Rpc_enabled; assign out_pc_enabled = Rpc_enabled;
@@ -25,10 +31,12 @@ module writeback(
 	reg [31:0] Rmem_addr; assign out_mem_addr = Rmem_addr;
 	reg [31:0] Rmem_data; assign out_mem_data = Rmem_data;
 
-	always @ (posedge clk) begin
+	always @ (posedge clk or posedge rst) begin
 		if(rst) begin
+			Rerrno <= 0;
 			Rreg_index <= 0; Rpc_enabled <= 0; Rmem_enabled <= 0;
 		end else begin
+			Rerrno <= in_errno;
 			Rreg_index <= in_reg_index;
 			Rreg_data <= in_reg_data;
 			Rpc_enabled <= in_pc_enabled;

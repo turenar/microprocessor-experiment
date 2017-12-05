@@ -37,3 +37,10 @@
 `define ALUC_SRL	6'h11
 `define ALUC_SRA	6'h12
 `define ALUC_NONE	6'h3f
+
+`define ERRC_BITWIDTH 4
+`define ERRC_BITDEF (`ERRC_BITWIDTH-1):0
+`define ERRC_NOERR	4'b0000
+`define ERRC_HALTED	4'b0001
+`define ERRC_ILL	4'b1000
+`define ERRC_ILLAUX	4'b1001

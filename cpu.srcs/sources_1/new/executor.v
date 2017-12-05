@@ -3,7 +3,8 @@
 module executor(
 	input clk,
 	input rst,
-	output halt,
+	input [`ERRC_BITDEF] in_errno,
+	output [`ERRC_BITDEF] out_errno,
 	input [31:0] in_npc,
 	input [5:0] opcode,
 	input [`OPTYPE_BITDEF] optype, // 1=R, 2=I, 3=A
@@ -23,7 +24,9 @@ module executor(
 	);
 
 	wire [31:0] Walu_routv;
-	reg Rhalt; assign halt = Rhalt;
+	wire [`ERRC_BITDEF] Walu_errno;
+	reg [`ERRC_BITDEF] Rerrno;
+	assign out_errno = Rerrno ? Rerrno : (Ralu_enabled ? Walu_errno : 0);
 	reg Ralu_enabled;
 	reg [4:0] Rreg_index; assign out_reg_index = Rreg_index;
 	reg [31:0] Rreg_data;
@@ -35,7 +38,7 @@ module executor(
 	assign out_reg_data = Ralu_enabled ? Walu_routv : Rreg_data;
 
 	alu alu0(
-		.clk(clk), .aux(aux),
+		.clk(clk), .rst(rst), .errno(Walu_errno), .aux(aux),
 		.ra(rav), .rb(rbv), .rout(Walu_routv));
 
 	task Tzalu;
@@ -79,15 +82,15 @@ module executor(
 		end
 	endtask
 
-	always @ (posedge clk) begin
-		if (rst || Rhalt) begin
+	always @ (posedge clk or posedge rst) begin
+		if (rst || Rerrno) begin
 			if (rst) begin
-				Rhalt <= 0;
+				Rerrno <= 0;
 			end
 			Ralu_enabled <= 0;
 			Rreg_index <= 0; Rpc_enabled <= 0; Rmem_enabled <= 0;
 			Rreg_data <= 0; Rpc_addr <= 0; Rmem_addr <= 0; Rmem_data <= 0;
-		end else if (!Rhalt) begin
+		end else if (in_errno == 0) begin
 			if (optype == `OPTYPE_VJ) begin
 				Tzalu; Tzreg; Tzmem;
 				Tupc(rav != 0, rbv);
@@ -108,7 +111,7 @@ module executor(
 				Tzalu; Tzreg; Tzmem;
 				Tupc(1, rav);
 			end else if (opcode == `OPCODE_HALT) begin
-				Rhalt <= 1;
+				Rerrno <= `ERRC_HALTED;
 			end
 		end
 	end

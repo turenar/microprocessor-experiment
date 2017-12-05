@@ -3,6 +3,8 @@
 module decoder(
 	input clk,
 	input rst,
+	input [`ERRC_BITDEF] in_errno,
+	output [`ERRC_BITDEF] out_errno,
 	input [31:0] in_npc,
 	input [5:0] in_opc,
 	input [`OPTYPE_BITDEF] in_opt,
@@ -24,6 +26,7 @@ module decoder(
 	output [31:0] out_mem_read_addr
 	);
 
+	reg [`ERRC_BITDEF] Rerrno; assign out_errno = Rerrno;
 	reg [31:0] Rnpc; assign out_npc = Rnpc;
 	reg [5:0] Ropc; assign out_opc = Ropc;
 	reg [`OPTYPE_BITDEF] Ropt; assign out_opt = Ropt;
@@ -33,13 +36,13 @@ module decoder(
 	reg [10:0] Raux; assign out_aux = Raux;
 	reg [31:0] Rmem_read_addr; assign out_mem_read_addr = Rmem_read_addr;
 
-	always @ (posedge clk) begin
+	always @ (posedge clk or posedge rst) begin
 		if (rst) begin
-			Rnpc <= `PC_ILLEGAL;
+			Rerrno <= 0; Rnpc <= `PC_ILLEGAL;
 			Ropc <= 0; Ropt <= 0; Rrav <= 0; Rrbv <= 0;
 			Rrout <= 0; Raux <= 0; Rmem_read_addr <= 0;
 		end else begin
-			Rnpc <= in_npc;
+			Rerrno <= in_errno; Rnpc <= in_npc;
 			Ropc <= in_opc; Ropt <= in_opt; /*Rrav <= in_rav; Rrbv <= in_rbv; */
 			Rrout <= in_rout; Raux <= in_aux;
 			if (in_opc == `OPCODE_LW) begin
