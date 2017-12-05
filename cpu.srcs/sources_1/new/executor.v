@@ -23,6 +23,7 @@ module executor(
 	output [31:0] out_mem_data
 	);
 
+	reg [31:0] Rnpc; assign out_npc = Rnpc;
 	wire [31:0] Walu_routv;
 	wire [`ERRC_BITDEF] Walu_errno;
 	reg [`ERRC_BITDEF] Rerrno;
@@ -91,6 +92,7 @@ module executor(
 			Rreg_index <= 0; Rpc_enabled <= 0; Rmem_enabled <= 0;
 			Rreg_data <= 0; Rpc_addr <= 0; Rmem_addr <= 0; Rmem_data <= 0;
 		end else if (in_errno == 0) begin
+			Rnpc <= in_npc;
 			if (optype == `OPTYPE_VJ) begin
 				Tzalu; Tzreg; Tzmem;
 				Tupc(rav != 0, rbv);

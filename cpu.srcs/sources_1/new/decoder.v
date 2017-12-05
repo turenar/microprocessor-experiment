@@ -15,7 +15,6 @@ module decoder(
 	input [15:0] in_imm,
 	input [25:0] in_addr,
 	input [31:0] in_mem_read_addr,
-	input [31:0] in_mem_write_addr,
 	output [31:0] out_npc,
 	output [5:0] out_opc,
 	output [`OPTYPE_BITDEF] out_opt,

@@ -3,7 +3,6 @@
 module writeback(
 	input clk, input rst,
 	input [`ERRC_BITDEF] in_errno,
-	output halt,
 	output [`ERRC_BITDEF] out_errno,
 	input [31:0] in_npc,
 	input [4:0] in_reg_index,
