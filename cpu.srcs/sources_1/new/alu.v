@@ -34,6 +34,7 @@ module alu(
 				`ALUC_SLL:	Treturn(ra << shift_width);
 				`ALUC_SRL:	Treturn(ra >> shift_width);
 				`ALUC_SRA:	Treturn(ra >>> shift_width);
+				31:			Rerrno <= `ERRC_NOERR;
 				default:	Rerrno <= `ERRC_ILLAUX;
 			endcase
 		end
