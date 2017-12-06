@@ -27,8 +27,8 @@ module executor(
 	wire [31:0] Walu_routv;
 	wire [`ERRC_BITDEF] Walu_errno;
 	reg [`ERRC_BITDEF] Rerrno;
-	assign out_errno = Rerrno ? Rerrno : (Ralu_enabled ? Walu_errno : 0);
 	reg Ralu_enabled;
+	assign out_errno = Rerrno ? Rerrno : (Ralu_enabled ? Walu_errno : 0);
 	reg [4:0] Rreg_index; assign out_reg_index = Rreg_index;
 	reg [31:0] Rreg_data;
 	reg Rpc_enabled; assign out_pc_enabled = Rpc_enabled;
