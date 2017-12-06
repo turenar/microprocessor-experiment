@@ -16,7 +16,7 @@ module register(
 	always @(posedge clk or posedge rst) begin
 		if(rst) begin
 			for (i = 0; i<32; i=i+1) begin
-				files[i] = 0;
+				files[i] <= 0;
 			end
 		end else begin
 			if(w_index) files[w_index] <= w_data;
