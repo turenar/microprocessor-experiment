@@ -32,8 +32,7 @@ module executor(
 	wire [31:0] Walu_routv;
 	wire [`ERRC_BITDEF] Walu_errno;
 	reg [`ERRC_BITDEF] Rerrno;
-	reg Ralu_enabled;
-	assign out_errno = Rerrno ? Rerrno : (Ralu_enabled ? Walu_errno : 0);
+	assign out_errno = Rerrno;
 	reg [4:0] Rreg_index; assign out_reg_index = Rreg_index;
 	reg [31:0] Rreg_data;
 	reg Rpc_enabled; assign out_pc_enabled = Rpc_enabled;
@@ -41,20 +40,21 @@ module executor(
 	reg Rmem_enabled; assign out_mem_enabled = Rmem_enabled;
 	reg [31:0] Rmem_addr; assign out_mem_addr = Rmem_addr;
 	reg [31:0] Rmem_data; assign out_mem_data = Rmem_data;
-	assign out_reg_data = Ralu_enabled ? Walu_routv : Rreg_data;
+	assign out_reg_data = Rreg_data;
 
 	alu alu0(
-		.clk(clk), .rst(rst), .errno(Walu_errno), .aux(Ralu_enabled ? aux : 11'd31),
+		.errno(Walu_errno), .aux(aux),
 		.ra(rav), .rb(rbv), .rout(Walu_routv));
+
 
 	task Tzalu;
 		begin
-			Ralu_enabled <= 0;
+			// do nothing
 		end
 	endtask
 	task Tualu(input Aenabled, input[4:0] Areg_index);
 		begin
-			Ralu_enabled = Aenabled; Rreg_index <= Areg_index;
+			Rreg_index <= Areg_index; Rreg_data <= Walu_routv; Rerrno <= Walu_errno;
 		end
 	endtask
 	task Tzreg;
@@ -93,10 +93,12 @@ module executor(
 			if (rst) begin
 				Rerrno <= 0;
 			end
-			Ralu_enabled <= 0; Rreg_map <= 0; Rnpc <= 0;
+			Rreg_map <= 0; Rnpc <= `PC_ILLEGAL;
 			Rreg_index <= 0; Rpc_enabled <= 0; Rmem_enabled <= 0;
 			Rreg_data <= 0; Rpc_addr <= 0; Rmem_addr <= 0; Rmem_data <= 0;
-		end else if (in_errno == 0 && (enabled && in_valid)) begin
+		end else if (in_errno != 0) begin
+			Rerrno <= in_errno;
+		end else if (enabled && in_valid) begin
 			Rnpc <= in_npc; Rreg_map <= in_reg_map;
 			if (optype == `OPTYPE_VJ) begin
 				Tzalu; Tzreg; Tzmem;
