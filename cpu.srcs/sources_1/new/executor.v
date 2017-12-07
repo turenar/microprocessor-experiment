@@ -4,6 +4,7 @@ module executor(
 	input clk,
 	input rst,
 	input enabled,
+	input in_valid,
 	input [`ERRC_BITDEF] in_errno,
 	output [`ERRC_BITDEF] out_errno,
 	input [31:0] in_npc,
@@ -88,14 +89,14 @@ module executor(
 	endtask
 
 	always @ (posedge clk or posedge rst) begin
-		if (rst || Rerrno) begin
+		if (rst || Rerrno || (enabled && !in_valid)) begin
 			if (rst) begin
 				Rerrno <= 0;
 			end
 			Ralu_enabled <= 0; Rreg_map <= 0; Rnpc <= 0;
 			Rreg_index <= 0; Rpc_enabled <= 0; Rmem_enabled <= 0;
 			Rreg_data <= 0; Rpc_addr <= 0; Rmem_addr <= 0; Rmem_data <= 0;
-		end else if (in_errno == 0 && enabled) begin
+		end else if (in_errno == 0 && (enabled && in_valid)) begin
 			Rnpc <= in_npc; Rreg_map <= in_reg_map;
 			if (optype == `OPTYPE_VJ) begin
 				Tzalu; Tzreg; Tzmem;

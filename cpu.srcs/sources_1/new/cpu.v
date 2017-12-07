@@ -75,6 +75,15 @@ module cpu(
 		.wb_check(~clk),
 		.wb_using_register_map(rab_wb_in_using_register_map));
 
+	wire mab_locked_fault;
+	wire mab_dec_r_enabled, mab_dec_w_enabled, mab_wb_w_enabled;
+	wire [31:0] mab_dec_r_addr, mab_dec_w_addr, mab_wb_w_addr;
+	memory_arbitrator mab (
+		.clk(~clk), .rst(rst || pipeline_flush), .dec_locked_fault(mab_locked_fault),
+		.dec_r_enabled(mab_dec_r_enabled), .dec_w_enabled(mab_dec_w_enabled),
+		.dec_r_addr(mab_dec_r_addr), .dec_w_addr(mab_dec_w_addr),
+		.wb_w_enabled(mab_wb_w_enabled), .wb_w_addr(mab_wb_w_addr));
+
 	wire [`ERRC_BITDEF] pdc_errno;
 	wire pdc_enabled;
 	wire [31:0] pdc_npc;
@@ -90,7 +99,7 @@ module cpu(
 	assign reg_r1_index = pdc_rar;
 	assign reg_r2_index = pdc_rbr;
 	assign pdc_inst = mem_r1_data;
-	assign pdc_enabled = rab_pdc_no_conflict;
+	assign pdc_enabled = rab_pdc_no_conflict || ~mab_locked_fault;
 	predecoder pdc0(
 		.clk(clk), .rst(rst || pipeline_flush),
 		.enabled(pdc_enabled), .errno(pdc_errno),
@@ -110,13 +119,18 @@ module cpu(
 	wire [10:0] dec_aux;
 	wire dec_mem_r_enabled, dec_mem_w_enabled;
 	wire [31:0] dec_mem_r_addr, dec_mem_w_addr;
+	assign mab_dec_r_enabled = dec_mem_r_enabled;
+	assign mab_dec_w_enabled = dec_mem_w_enabled;
+	assign mab_dec_r_addr = dec_mem_r_addr;
+	assign mab_dec_w_addr = dec_mem_w_addr;
+	assign mem_r2_addr = mab_dec_r_addr;
 	assign dec_in_rav = pdc_rar != 0 ? reg_r1_data : pdc_rav;
 	assign dec_in_rbv = pdc_rbr != 0 ? reg_r2_data : pdc_rbv;
-	assign dec_enabled = rab_pdc_no_conflict;
+	assign dec_enabled = ~mab_locked_fault;
 
 	decoder dec0(
 		.clk(clk), .rst(rst || pipeline_flush),
-		.enabled(1), .in_valid(rab_pdc_no_conflict),
+		.enabled(dec_enabled), .in_valid(rab_pdc_no_conflict),
 		.in_errno(pdc_errno), .out_errno(dec_errno),
 		.in_npc(pdc_npc), .in_reg_map(rab_using_reg_map), .in_opc(pdc_opc), .in_opt(pdc_opt),
 		.in_rav(dec_in_rav), .in_rbv(dec_in_rbv),
@@ -143,7 +157,7 @@ module cpu(
 
 	executor exec0(
 		.clk(clk), .rst(rst || pipeline_flush),
-		.enabled(1),
+		.enabled(1), .in_valid(~mab_locked_fault),
 		.in_errno(dec_errno), .out_errno(exec_errno),
 		.in_npc(dec_npc), .in_reg_map(dec_reg_map), .opcode(dec_opc), .optype(dec_opt),
 		.rav(dec_rav), .rbv(dec_rbv), .rout(dec_ror),
