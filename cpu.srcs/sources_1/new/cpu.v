@@ -157,7 +157,7 @@ module cpu(
 
 	executor exec0(
 		.clk(clk), .rst(rst || pipeline_flush),
-		.enabled(1), .in_valid(~mab_locked_fault),
+		.enabled(1'b1), .in_valid(~mab_locked_fault),
 		.in_errno(dec_errno), .out_errno(exec_errno),
 		.in_npc(dec_npc), .in_reg_map(dec_reg_map), .opcode(dec_opc), .optype(dec_opt),
 		.rav(dec_rav), .rbv(dec_rbv), .rout(dec_ror),
