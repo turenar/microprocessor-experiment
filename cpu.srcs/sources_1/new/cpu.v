@@ -186,6 +186,8 @@ module cpu(
 		.out_mem_enabled(mem_wenabled), .out_mem_addr(mem_w_addr),
 		.out_mem_data(mem_w_data));
 	assign mem_r1_addr = wb_pc_enabled ? wb_pc_addr : ic_next_addr;
+	assign mab_wb_w_enabled = mem_wenabled;
+	assign mab_wb_w_addr = mem_w_addr;
 	assign ic_set_enabled = wb_pc_enabled;
 	assign ic_set_addr = wb_pc_addr;
 	assign pipeline_flush = wb_set_pc_pulse;

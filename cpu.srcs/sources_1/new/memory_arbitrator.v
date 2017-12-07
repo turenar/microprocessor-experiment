@@ -9,13 +9,14 @@ module memory_arbitrator (
 	input [31:0] wb_w_addr);
 
 	reg Rlocked;
-	assign dec_locked_fault = Rlocked && (dec_r_enabled || dec_w_enabled);
+	reg Rdec_locked_fault; assign dec_locked_fault = Rdec_locked_fault;
 
 	always @ (posedge clk or posedge rst) begin
 		if (rst) begin
-			Rlocked <= 0;
+			Rlocked <= 0; Rdec_locked_fault <= 0;
 		end else begin
-			Rlocked <= (Rlocked && ~wb_w_enabled) || (dec_r_enabled || dec_w_enabled);
+			Rlocked <= (Rlocked && ~wb_w_enabled) || dec_w_enabled;
+			Rdec_locked_fault <= Rlocked && (dec_r_enabled || dec_w_enabled);
 		end
 	end
 endmodule // register_arbitrator
