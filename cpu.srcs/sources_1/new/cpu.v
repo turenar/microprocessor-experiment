@@ -99,7 +99,7 @@ module cpu(
 	assign reg_r1_index = pdc_rar;
 	assign reg_r2_index = pdc_rbr;
 	assign pdc_inst = mem_r1_data;
-	assign pdc_enabled = rab_pdc_no_conflict || ~mab_locked_fault;
+	assign pdc_enabled = rab_pdc_no_conflict && ~mab_locked_fault;
 	predecoder pdc0(
 		.clk(clk), .rst(rst || pipeline_flush),
 		.enabled(pdc_enabled), .errno(pdc_errno),
