@@ -97,8 +97,7 @@ module cpu(
 		.in_npc(mem_r1_addr), .instruction(mem_r1_data),
 		.out_npc(pdc_npc), .opcode(pdc_opc), .optype(pdc_opt),
 		.rar(pdc_rar), .rav(pdc_rav), .rbr(pdc_rbr), .rbv(pdc_rbv),
-		.rout(pdc_ror), .aux(pdc_aux), .imm(pdc_imm), .addr(pdc_addr),
-		.mem_read_addr(pdc_read_mem_addr));
+		.rout(pdc_ror), .aux(pdc_aux), .imm(pdc_imm), .addr(pdc_addr));
 
 	wire [`ERRC_BITDEF] dec_errno;
 	wire dec_enabled;
@@ -109,6 +108,8 @@ module cpu(
 	wire [4:0] dec_ror;
 	wire [31:0] dec_in_rav, dec_in_rbv, dec_rav, dec_rbv;
 	wire [10:0] dec_aux;
+	wire dec_mem_r_enabled, dec_mem_w_enabled;
+	wire [31:0] dec_mem_r_addr, dec_mem_w_addr;
 	assign dec_in_rav = pdc_rar != 0 ? reg_r1_data : pdc_rav;
 	assign dec_in_rbv = pdc_rbr != 0 ? reg_r2_data : pdc_rbv;
 	assign dec_enabled = rab_pdc_no_conflict;
@@ -120,11 +121,11 @@ module cpu(
 		.in_npc(pdc_npc), .in_reg_map(rab_using_reg_map), .in_opc(pdc_opc), .in_opt(pdc_opt),
 		.in_rav(dec_in_rav), .in_rbv(dec_in_rbv),
 		.in_rout(pdc_ror), .in_aux(pdc_aux), .in_imm(pdc_imm), .in_addr(pdc_addr),
-		.in_mem_read_addr(pdc_read_mem_addr),
 		.out_npc(dec_npc), .out_reg_map(dec_reg_map), .out_opc(dec_opc), .out_opt(dec_opt),
 		.out_rav(dec_rav), .out_rbv(dec_rbv),
 		.out_rout(dec_ror), .out_aux(dec_aux),
-		.out_mem_read_addr(mem_r2_addr));
+		.out_mem_read_enabled(dec_mem_r_enabled), .out_mem_write_enabled(dec_mem_w_enabled),
+		.out_mem_read_addr(dec_mem_r_addr), .out_mem_write_addr(dec_mem_w_addr));
 
 	wire [`ERRC_BITDEF] exec_errno;
 	wire exec_enabled;

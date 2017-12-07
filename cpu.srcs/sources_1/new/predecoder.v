@@ -15,8 +15,7 @@ module predecoder(
 	output [4:0] rout,
 	output [10:0] aux,
 	output [15:0] imm,
-	output [25:0] addr,
-	output [31:0] mem_read_addr
+	output [25:0] addr
 	);
 
 	reg [`ERRC_BITDEF] Rerrno; assign errno = Rerrno;
@@ -31,7 +30,6 @@ module predecoder(
 	reg [10:0] Raux; assign aux = Raux;
 	reg [15:0] Rimm; assign imm = Rimm;
 	reg [25:0] Raddr; assign addr = Raddr;
-	reg [31:0] Rmem_read_addr; assign mem_read_addr = Rmem_read_addr;
 
 	wire [5:0] WOopc; assign WOopc = instruction[31:26];
 	wire [4:0] WOrs; assign WOrs = instruction[25:21];
@@ -56,7 +54,7 @@ module predecoder(
 		begin
 			Ropc <= Aopc; Ropt <= `OPTYPE_R;
 			Tset_register(Arar, Arav, Arbr, Arbv);
-			Rrout <= Arout; Raux <= Aaux; Rimm <= 0; Raddr <= 0; Rmem_read_addr <= 0;
+			Rrout <= Arout; Raux <= Aaux; Rimm <= 0; Raddr <= 0;
 		end
 	endtask
 	task TopImemread_offset(input [5:0] Aopc, input [5:0] Arar, input [4:0] Arout);
@@ -91,7 +89,7 @@ module predecoder(
 			end
 			Rnpc <= `PC_ILLEGAL;
 			Ropc <= 0; Ropt <= 0; Rrar <= 0; Rrav <= 0; Rrbr <= 0; Rrbv <= 0;
-			Rrout <= 0; Raux <= 0; Rimm <= 0; Raddr <= 0; Rmem_read_addr <= 0;
+			Rrout <= 0; Raux <= 0; Rimm <= 0; Raddr <= 0;
 		end else if(Rerrno == 0 && enabled) begin
 			Rnpc <= in_npc;
 			if(WOopc == `OPCODE_AUX) begin
