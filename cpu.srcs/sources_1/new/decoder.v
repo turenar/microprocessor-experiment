@@ -62,12 +62,12 @@ module decoder(
 	endtask
 	task Tsmread(input Aenabled, input[31:0] Aaddr);
 		begin
-			Rmem_read_enabled <= 0; Rmem_read_addr <= Aaddr;
+			Rmem_read_enabled <= Aenabled; Rmem_read_addr <= Aaddr;
 		end
 	endtask
 	task Tsmwrite(input Aenabled, input[31:0] Aaddr);
 		begin
-			Rmem_write_enabled <= 0; Rmem_write_addr <= Aaddr;
+			Rmem_write_enabled <= Aenabled; Rmem_write_addr <= Aaddr;
 		end
 	endtask
 
