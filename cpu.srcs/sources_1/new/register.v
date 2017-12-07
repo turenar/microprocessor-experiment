@@ -18,6 +18,8 @@ module register(
 			for (i = 0; i<32; i=i+1) begin
 				files[i] <= 0;
 			end
+			r1_i <= 0;
+			r2_i <= 0;
 		end else begin
 			if(w_index) files[w_index] <= w_data;
 			r1_i <= r1_index;

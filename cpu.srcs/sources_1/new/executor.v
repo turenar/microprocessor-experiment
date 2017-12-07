@@ -3,9 +3,11 @@
 module executor(
 	input clk,
 	input rst,
+	input enabled,
 	input [`ERRC_BITDEF] in_errno,
 	output [`ERRC_BITDEF] out_errno,
 	input [31:0] in_npc,
+	input [31:0] in_reg_map,
 	input [5:0] opcode,
 	input [`OPTYPE_BITDEF] optype, // 1=R, 2=I, 3=A
 	input [31:0] rav,
@@ -14,6 +16,7 @@ module executor(
 	input [10:0] aux,
 	input [31:0] mem_v,
 	output [31:0] out_npc,
+	output [31:0] out_reg_map,
 	output [4:0] out_reg_index,
 	output [31:0] out_reg_data,
 	output out_pc_enabled,
@@ -24,6 +27,7 @@ module executor(
 	);
 
 	reg [31:0] Rnpc; assign out_npc = Rnpc;
+	reg [31:0] Rreg_map; assign out_reg_map = Rreg_map;
 	wire [31:0] Walu_routv;
 	wire [`ERRC_BITDEF] Walu_errno;
 	reg [`ERRC_BITDEF] Rerrno;
@@ -88,11 +92,11 @@ module executor(
 			if (rst) begin
 				Rerrno <= 0;
 			end
-			Ralu_enabled <= 0;
+			Ralu_enabled <= 0; Rreg_map <= 0; Rnpc <= 0;
 			Rreg_index <= 0; Rpc_enabled <= 0; Rmem_enabled <= 0;
 			Rreg_data <= 0; Rpc_addr <= 0; Rmem_addr <= 0; Rmem_data <= 0;
-		end else if (in_errno == 0) begin
-			Rnpc <= in_npc;
+		end else if (in_errno == 0 && enabled) begin
+			Rnpc <= in_npc; Rreg_map <= in_reg_map;
 			if (optype == `OPTYPE_VJ) begin
 				Tzalu; Tzreg; Tzmem;
 				Tupc(rav != 0, rbv);

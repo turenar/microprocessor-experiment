@@ -1,8 +1,7 @@
 `include "def.vh"
 
 module predecoder(
-	input clk,
-	input rst,
+	input clk, input rst, input enabled,
 	output [`ERRC_BITDEF] errno,
 	input [31:0] in_npc,
 	input [31:0] instruction,
@@ -92,8 +91,8 @@ module predecoder(
 			end
 			Rnpc <= `PC_ILLEGAL;
 			Ropc <= 0; Ropt <= 0; Rrar <= 0; Rrav <= 0; Rrbr <= 0; Rrbv <= 0;
-			Rrout <= 0; Raux <= 0; Rmem_read_addr <= 0;
-		end else if(Rerrno == 0) begin
+			Rrout <= 0; Raux <= 0; Rimm <= 0; Raddr <= 0; Rmem_read_addr <= 0;
+		end else if(Rerrno == 0 && enabled) begin
 			Rnpc <= in_npc;
 			if(WOopc == `OPCODE_AUX) begin
 				TopR(WOopc, WOrs, 0, WOrt, 0, WOrd, WOaux);
