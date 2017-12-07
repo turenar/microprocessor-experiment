@@ -42,6 +42,7 @@ module writeback(
 			Rerrno <= 0; Rnpc <= `PC_ILLEGAL; Rreg_map <= 0;
 			Rreg_index <= 0; Rpc_enabled <= 0; Rmem_enabled <= 0;
 			Rreg_data <= 0; Rpc_addr <= 0; Rmem_addr <= 0; Rmem_data <= 0;
+			Rset_pc_pulse <= 0;
 		end else begin
 			Rerrno <= in_errno;
 			Rnpc <= in_npc;

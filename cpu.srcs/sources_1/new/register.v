@@ -11,6 +11,7 @@ module register(
 	reg [4:0] r1_i;
 	reg [4:0] r2_i;
 	reg [31:0] files [0:31];
+	wire [31:0] Wsanitized_w_data;
 
 	integer i;
 	always @(posedge clk or posedge rst) begin
@@ -27,6 +28,7 @@ module register(
 		end
 	end
 
-	assign r1_data = files[r1_i];
-	assign r2_data = files[r2_i];
+	assign Wsanitized_w_data = (w_index == 0) ? 0 : w_data;
+	assign r1_data = (r1_i == w_index) ? Wsanitized_w_data : files[r1_i];
+	assign r2_data = (r2_i == w_index) ? Wsanitized_w_data : files[r2_i];
 endmodule
