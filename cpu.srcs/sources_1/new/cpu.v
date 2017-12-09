@@ -67,9 +67,8 @@ module cpu(
 	wire [31:0] rab_using_reg_map;
 	wire [31:0] rab_wb_in_using_register_map;
 	wire [4:0] pdc_rar, pdc_rbr, pdc_ror;
-	assign ic_next_enabled = rab_pdc_no_conflict;
 	register_arbitrator rab (
-		.clk(~clk), .rst(rst || pipeline_flush), .pdc_check(~clk),
+		.clk(~clk), .rst(rst || pipeline_flush), .pdc_check(rab_pdc_check),
 		.pdc_r1_index(pdc_rar), .pdc_r2_index(pdc_rbr), .pdc_w_index(pdc_ror),
 		.pdc_no_conflict(rab_pdc_no_conflict), .pdc_using_register_map(rab_using_reg_map),
 		.wb_check(~clk),
@@ -100,6 +99,7 @@ module cpu(
 	assign reg_r2_index = pdc_rbr;
 	assign pdc_inst = mem_r1_data;
 	assign pdc_enabled = rab_pdc_no_conflict && ~mab_locked_fault;
+	assign ic_next_enabled = pdc_enabled;
 	predecoder pdc0(
 		.clk(clk), .rst(rst || pipeline_flush),
 		.enabled(pdc_enabled), .errno(pdc_errno),
@@ -127,6 +127,7 @@ module cpu(
 	assign dec_in_rav = pdc_rar != 0 ? reg_r1_data : pdc_rav;
 	assign dec_in_rbv = pdc_rbr != 0 ? reg_r2_data : pdc_rbv;
 	assign dec_enabled = ~mab_locked_fault;
+	assign rab_pdc_check = ~clk && dec_enabled;
 
 	decoder dec0(
 		.clk(clk), .rst(rst || pipeline_flush),
