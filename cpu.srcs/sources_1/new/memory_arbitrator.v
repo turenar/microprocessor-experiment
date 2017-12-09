@@ -16,7 +16,7 @@ module memory_arbitrator (
 			Rlocked <= 0; Rdec_locked_fault <= 0;
 		end else begin
 			Rlocked <= (Rlocked && ~wb_w_enabled) || dec_w_enabled;
-			Rdec_locked_fault <= Rlocked && (dec_r_enabled || dec_w_enabled);
+			Rdec_locked_fault <= (Rlocked && ~wb_w_enabled) && (dec_r_enabled || dec_w_enabled);
 		end
 	end
 endmodule // register_arbitrator
