@@ -44,7 +44,12 @@ module writeback(
 			Rreg_data <= 0; Rpc_addr <= 0; Rmem_addr <= 0; Rmem_data <= 0;
 			Rset_pc_pulse <= 0;
 		end else begin
-			Rerrno <= in_errno;
+			if (in_pc_enabled && in_pc_addr[1:0] != 0) begin
+				// pc must be 4byte addressing
+				Rerrno <= in_errno ? in_errno : `ERRC_INPC;
+			end else begin
+				Rerrno <= in_errno;
+			end
 			Rnpc <= in_npc;
 			Rreg_map <= in_reg_map;
 			Rreg_index <= in_reg_index;

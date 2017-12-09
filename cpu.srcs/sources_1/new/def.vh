@@ -44,3 +44,5 @@
 `define ERRC_HALTED	4'b0001
 `define ERRC_ILL	4'b1000
 `define ERRC_ILLAUX	4'b1001
+`define ERRC_INPC	4'b1010
+`define ERRC_INADDR	4'b1011
