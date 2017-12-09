@@ -31,7 +31,6 @@ module cpu(
 
 	wire clk;
 	wire cpu_clk; assign cpu_clk = clk;
-	assign instruction_executed = 1; // FIXME
 
 	wire pipeline_flush;
 
@@ -173,6 +172,7 @@ module cpu(
 	wire [31:0] wb_reg_map; assign rab_wb_in_using_register_map = wb_reg_map;
 	wire wb_pc_enabled;
 	wire [31:0] wb_pc_addr;
+	wire [31:0] wb_npc;
 
 	writeback wb0(
 		.clk(clk), .rst(rst),
@@ -181,7 +181,8 @@ module cpu(
 		.in_reg_data(exec_reg_data),
 		.in_pc_enabled(exec_pc_enabled), .in_pc_addr(exec_pc_addr),
 		.in_mem_enabled(exec_mem_enabled), .in_mem_addr(exec_mem_addr),
-		.in_mem_data(exec_mem_data), .out_set_pc_pulse(wb_set_pc_pulse),
+		.in_mem_data(exec_mem_data),
+		.out_npc(wb_npc), .out_set_pc_pulse(wb_set_pc_pulse),
 		.out_reg_index(reg_w_index), .out_reg_map(wb_reg_map), .out_reg_data(reg_w_data),
 		.out_pc_enabled(wb_pc_enabled), .out_pc_addr(wb_pc_addr),
 		.out_mem_enabled(mem_wenabled), .out_mem_addr(mem_w_addr),
@@ -192,6 +193,7 @@ module cpu(
 	assign ic_set_enabled = wb_pc_enabled;
 	assign ic_set_addr = wb_pc_addr + 4;
 	assign pipeline_flush = wb_set_pc_pulse;
+	assign instruction_executed = wb_npc != `PC_ILLEGAL;
 
 	assign halt = wb_errno != `ERRC_NOERR;
 	assign errno = wb_errno;

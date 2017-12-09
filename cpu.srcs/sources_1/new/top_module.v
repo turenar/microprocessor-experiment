@@ -46,6 +46,7 @@ module top_module(
 		.CLK_IP(instruction_executed), .RSTN_IP(cpu_resetn),
 		.COUNTER_OP(counter_data));
 
+	reg [31:0] cpu_inst_executed;
 	reg [2:0] counter;
 	reg dt_we;
 	reg [5:0] dt_waddr;
@@ -63,7 +64,7 @@ module top_module(
 
 	always @ (posedge sysclk) begin
 		if (~cpu_resetn) begin
-			counter <= 0;
+			counter <= 0; cpu_inst_executed <= 0;
 			dt_we <= 0; dt_waddr <= 0; dt_wdata <= 0;
 		end else if (halt) begin
 			if (counter[2] == 0) begin
@@ -74,6 +75,8 @@ module top_module(
 			end else begin
 				dt_we <= 0;
 			end
+		end else if(instruction_executed) begin
+			cpu_inst_executed <= cpu_inst_executed + 1;
 		end
 	end
 endmodule
