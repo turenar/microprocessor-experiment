@@ -32,7 +32,7 @@ module char_test(
     );
     input wire clk, rst, print_fin, we;
     input wire [5:0] wr_addr;
-    input wire [7:0] din;    
+    input wire [7:0] din;
     output wire [64*8-1:0] dout;
 
     reg [64*8-1:0] c_data;
@@ -41,7 +41,7 @@ module char_test(
 
     always @(posedge clk or posedge rst) begin
         if(rst) begin
-            c_data <= {`UpH,`LowA,`LowV,`LowE,`Null,`LowA,`Null,`LowF,`LowU,`LowN,`Excl,`Null,`Null,`Null,`Null,`Null,
+            c_data <= {`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,
                         `Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,
                         `Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,
                         `Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null,`Null};
