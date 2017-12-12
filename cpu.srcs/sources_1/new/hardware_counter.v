@@ -1,7 +1,9 @@
+`include "display_src/char_def.vh"
+
 module hardware_counter(
     input CLK_IP,
     input RSTN_IP,
-    output [31:0] COUNTER_OP
+    output [63:0] COUNTER_OP
     );
 
     function [7:0] decoded_byte(
@@ -26,6 +28,10 @@ module hardware_counter(
         end
     end // always @(posedge CLKIN or negedge RSTN_IN)
 
-    assign COUNTER_OP ={ decoded_byte(cycles[15:12]), decoded_byte(cycles[11:8]), decoded_byte(cycles[7:4]), decoded_byte(cycles[3:0]) };
+    assign COUNTER_OP ={
+		decoded_byte(cycles[31:28]), decoded_byte(cycles[27:24]),
+		decoded_byte(cycles[23:20]), decoded_byte(cycles[19:16]),
+		decoded_byte(cycles[15:12]), decoded_byte(cycles[11:8]),
+		decoded_byte(cycles[7:4]), decoded_byte(cycles[3:0]) };
 
 endmodule // hardware_counter

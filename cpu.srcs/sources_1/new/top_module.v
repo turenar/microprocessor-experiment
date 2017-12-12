@@ -41,10 +41,15 @@ module top_module(
 		.sysclk(sysclk), .rst(~cpu_resetn),
 		.halt(halt), .instruction_executed(instruction_executed), .errno(errno));
 
-	wire [31:0] counter_data;
-	hardware_counter hc(
+	wire [63:0] hcsc_counter;
+	hardware_counter hc_sysclk(
+		.CLK_IP(sysclk & ~halt), .RSTN_IP(cpu_resetn),
+		.COUNTER_OP(hcsc_counter));
+
+	wire [63:0] hccc_counter;
+	hardware_counter hc_cpuclk(
 		.CLK_IP(instruction_executed), .RSTN_IP(cpu_resetn),
-		.COUNTER_OP(counter_data));
+		.COUNTER_OP(hccc_counter));
 
 	reg [2:0] counter;
 	reg dt_we;
@@ -56,7 +61,7 @@ module top_module(
 		.LED_OP(dt_led), .OLED_DC_OP(oled_dc), .OLED_RES_OP(oled_res),
 		.OLED_SCLK_OP(oled_sclk), .OLED_SDIN_OP(oled_sdin),
 		.OLED_VBAT_OP(oled_vbat), .OLED_VDD_OP(oled_vdd),
-		.WE_IP(dt_we), .WRITE_ADDR_IP(dt_waddr), .WRITE_DATA_IP(dt_wdata));
+		.WE_IP(ms_we), .WRITE_ADDR_IP(ms_addr), .WRITE_DATA_IP(ms_data));
 
 	assign led[7] = errno != 0;
 	assign led[6:0] = 7'b0 | errno;
@@ -68,9 +73,6 @@ module top_module(
 		end else if (halt) begin
 			if (counter[2] == 0) begin
 				counter <= counter + 1;
-				dt_we <= 1;
-				dt_waddr <= counter;
-				dt_wdata <= counter_data >> (24 - (counter << 3));
 			end else begin
 				dt_we <= 0;
 			end
