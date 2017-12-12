@@ -57,13 +57,13 @@ module predecoder(
 			Rrout <= Arout; Raux <= Aaux; Rimm <= 0; Raddr <= 0;
 		end
 	endtask
-	task TopImemread_offset(input [5:0] Aopc, input [5:0] Arar, input [4:0] Arout);
+	task TopImemread_offset(input [5:0] Aopc, input [4:0] Arar, input [4:0] Arout);
 		begin
 			Ropc <= Aopc; Ropt <= `OPTYPE_I; Tset_register(Arar, 0, 0, 0);
 			Rrout <= Arout; Raux <= 0; Rimm <= WOimm; Raddr <= 0;
 		end
 	endtask
-	task TopImemwrite_offset(input [5:0] Aopc, input [5:0] Arsrc, input [4:0] Araddr);
+	task TopImemwrite_offset(input [5:0] Aopc, input [4:0] Arsrc, input [4:0] Araddr);
 		begin
 			Ropc <= Aopc; Ropt <= `OPTYPE_I; Tset_register(Arsrc, 0, Araddr, 0);
 			Rrout <= 0; Raux <= 0; Rimm <= WOimm; Raddr <= 0;
