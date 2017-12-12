@@ -54,7 +54,7 @@ module cpu(
 		.set_enabled(ic_set_enabled), .next_enabled(ic_next_enabled),
 		.set_addr(ic_set_addr), .pc_addr(ic_next_addr));
 	ram ram0(
-		.clk(~clk), .we(mem_wenabled),
+		.clk(~clk), .rst(rst), .we(mem_wenabled),
 		.r1_addr(mem_r1_addr), .r1_data(mem_r1_data),
 		.r2_addr(mem_r2_addr), .r2_data(mem_r2_data),
 		.w_addr(mem_w_addr), .w_data(mem_w_data));
