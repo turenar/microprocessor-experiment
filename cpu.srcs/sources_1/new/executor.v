@@ -120,6 +120,7 @@ module executor(
 				Tzalu; Tzreg; Tzmem;
 				Tupc(1, rav);
 			end else if (opcode == `OPCODE_HALT) begin
+				Tzalu; Tzreg; Tzpc; Tzmem;
 				Rerrno <= `ERRC_HALTED;
 			end
 		end
