@@ -22,7 +22,10 @@ module writeback(
 	output [31:0] out_pc_addr,
 	output out_mem_enabled,
 	output [31:0] out_mem_addr,
-	output [31:0] out_mem_data
+	output [31:0] out_mem_data,
+	output out_extmem_enabled,
+	output [31:0] out_extmem_addr,
+	output [31:0] out_extmem_data
 	);
 
 	reg [`ERRC_BITDEF] Rerrno; assign out_errno = Rerrno;
@@ -36,13 +39,16 @@ module writeback(
 	reg Rmem_enabled; assign out_mem_enabled = Rmem_enabled;
 	reg [31:0] Rmem_addr; assign out_mem_addr = Rmem_addr;
 	reg [31:0] Rmem_data; assign out_mem_data = Rmem_data;
+	reg Rextmem_enabled; assign out_extmem_enabled = Rextmem_enabled;
+	assign out_extmem_addr = Rmem_addr;
+	assign out_extmem_data = Rmem_data;
 
 	always @ (posedge clk or posedge rst) begin
 		if(rst) begin
 			Rerrno <= 0; Rnpc <= `PC_ILLEGAL; Rreg_map <= 0;
 			Rreg_index <= 0; Rpc_enabled <= 0; Rmem_enabled <= 0;
 			Rreg_data <= 0; Rpc_addr <= 0; Rmem_addr <= 0; Rmem_data <= 0;
-			Rset_pc_pulse <= 0;
+			Rset_pc_pulse <= 0; Rextmem_enabled <= 0;
 		end else begin
 			if (in_pc_enabled && in_pc_addr[1:0] != 0) begin
 				// pc must be 4byte addressing
@@ -57,13 +63,16 @@ module writeback(
 			Rpc_enabled <= in_pc_enabled;
 			Rset_pc_pulse <= in_pc_enabled;
 			Rpc_addr <= in_pc_addr;
-			Rmem_enabled <= in_mem_enabled;
+			Rmem_enabled <= in_mem_enabled && in_mem_addr[31] == 0;
 			Rmem_addr <= in_mem_addr;
 			Rmem_data <= in_mem_data;
+			Rextmem_enabled <= in_mem_enabled && in_mem_addr[31] == 1;
 		end
 	end
 
 	always @ (negedge clk) begin
-		Rset_pc_pulse <= 0;
+		if(!rst) begin
+			Rset_pc_pulse <= 0;
+		end
 	end
 endmodule

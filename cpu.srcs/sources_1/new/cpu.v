@@ -26,7 +26,10 @@ module cpu(
 	input rst,
 	output halt,
 	output instruction_executed,
-	output [`ERRC_BITDEF] errno
+	output [`ERRC_BITDEF] errno,
+	output extmem_wenabled,
+	output [31:0] extmem_addr,
+	output [31:0] extmem_data
     );
 
 	wire clk;
@@ -173,6 +176,8 @@ module cpu(
 	wire wb_pc_enabled;
 	wire [31:0] wb_pc_addr;
 	wire [31:0] wb_npc;
+	wire wb_em_wenabled;
+	wire [31:0] wb_em_w_addr, wb_em_w_data;
 
 	writeback wb0(
 		.clk(clk), .rst(rst),
@@ -186,14 +191,18 @@ module cpu(
 		.out_reg_index(reg_w_index), .out_reg_map(wb_reg_map), .out_reg_data(reg_w_data),
 		.out_pc_enabled(wb_pc_enabled), .out_pc_addr(wb_pc_addr),
 		.out_mem_enabled(mem_wenabled), .out_mem_addr(mem_w_addr),
-		.out_mem_data(mem_w_data));
+		.out_mem_data(mem_w_data), .out_extmem_enabled(wb_em_wenabled),
+		.out_extmem_addr(wb_em_w_addr), .out_extmem_data(wb_em_w_data));
 	assign mem_r1_addr = wb_pc_enabled ? wb_pc_addr : ic_next_addr;
 	assign mab_wb_w_enabled = mem_wenabled;
 	assign mab_wb_w_addr = mem_w_addr;
 	assign ic_set_enabled = wb_pc_enabled;
 	assign ic_set_addr = wb_pc_addr + 4;
 	assign pipeline_flush = wb_set_pc_pulse;
-	assign instruction_executed = wb_npc != `PC_ILLEGAL;
+	assign instruction_executed = clk && (wb_npc != `PC_ILLEGAL);
+	assign extmem_wenabled = wb_em_wenabled;
+	assign extmem_addr = wb_em_w_addr;
+	assign extmem_data = wb_em_w_data;
 
 	assign halt = wb_errno != `ERRC_NOERR;
 	assign errno = wb_errno;

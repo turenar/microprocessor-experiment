@@ -33,6 +33,7 @@ module test_top();
     initial begin
 		clk <= 0;
 		rst <= 0;
+		sw <= 1;
     end
 
     always #5 begin
