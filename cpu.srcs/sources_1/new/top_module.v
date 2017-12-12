@@ -39,6 +39,7 @@ module top_module(
 	wire [`ERRC_BITDEF] errno;
 	wire c_extmem_wenabled;
 	wire [31:0] c_extmem_addr, c_extmem_data;
+	wire [31:0] c_pc;
 	cpu c0(
 		.sysclk(sysclk), .rst(~cpu_resetn),
 		.halt(halt), .instruction_executed(instruction_executed), .errno(errno),
@@ -83,7 +84,6 @@ module top_module(
 
 	assign led[7] = errno != 0;
 	assign led[6:0] = 7'b0 | errno;
-
 	reg [7:0] counter;
 
 	task Textmem_write(input [5:0] addr, input [31:0] data);

@@ -23,7 +23,7 @@ module hardware_counter(
     always @(posedge CLK_IP or negedge RSTN_IP) begin
         if(!RSTN_IP)begin
             cycles <= 32'h0;
-        end else begin
+        end else if(CLK_IP) begin
             cycles <= cycles + 1;
         end
     end // always @(posedge CLKIN or negedge RSTN_IN)

@@ -28,6 +28,7 @@ module cpu(
 	output instruction_executed,
 	output [`ERRC_BITDEF] errno,
 	output extmem_wenabled,
+	output [31:0] pc,
 	output [31:0] extmem_addr,
 	output [31:0] extmem_data
     );
@@ -96,7 +97,6 @@ module cpu(
 	wire [10:0] pdc_aux;
 	wire [15:0] pdc_imm;
 	wire [25:0] pdc_addr;
-	wire [31:0] pdc_read_mem_addr;
 	assign reg_r1_index = pdc_rar;
 	assign reg_r2_index = pdc_rbr;
 	assign pdc_inst = mem_r1_data;
@@ -148,7 +148,6 @@ module cpu(
 	wire exec_enabled;
 	wire [31:0] exec_npc;
 	wire [31:0] exec_reg_map;
-	wire [31:0] exec_rav, exec_rbv;
 	wire [4:0] exec_reg_index;
 	wire [31:0] exec_reg_data;
 	wire exec_pc_enabled;
@@ -199,10 +198,11 @@ module cpu(
 	assign ic_set_enabled = wb_pc_enabled;
 	assign ic_set_addr = wb_pc_addr + 4;
 	assign pipeline_flush = wb_set_pc_pulse;
-	assign instruction_executed = clk && (wb_npc != `PC_ILLEGAL);
+	assign instruction_executed = ~clk && (wb_npc != `PC_ILLEGAL);
 	assign extmem_wenabled = wb_em_wenabled;
 	assign extmem_addr = wb_em_w_addr;
 	assign extmem_data = wb_em_w_data;
+	assign pc = wb_npc;
 
 	assign halt = wb_errno != `ERRC_NOERR;
 	assign errno = wb_errno;
