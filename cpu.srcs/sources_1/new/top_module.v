@@ -34,6 +34,7 @@ module top_module(
 	output oled_vdd     //VDD enable
 	);
 
+	reg rst;
 	wire halt;
 	wire instruction_executed;
 	wire [`ERRC_BITDEF] errno;
@@ -41,7 +42,7 @@ module top_module(
 	wire [31:0] c_extmem_addr, c_extmem_data;
 	wire [31:0] c_pc;
 	cpu c0(
-		.sysclk(sysclk), .rst(~cpu_resetn),
+		.sysclk(sysclk), .rst(rst),
 		.halt(halt), .instruction_executed(instruction_executed), .errno(errno),
 		.extmem_wenabled(c_extmem_wenabled), .extmem_addr(c_extmem_addr),
 		.extmem_data(c_extmem_data));
@@ -67,7 +68,7 @@ module top_module(
 	wire [7:0] ms_data;
 
 	multipaged_screen ms(
-		.clk(sysclk), .rst(~cpu_resetn),
+		.clk(sysclk), .rst(rst),
 		.write_enabled(extmem_wenabled), .address(extmem_addr),
 		.data(extmem_data), .page(sw[1:0]),
 		.oled_write_enabled(ms_we), .oled_addr(ms_addr),
@@ -109,6 +110,8 @@ module top_module(
 			end else begin
 				tm_em_wenabled <= 0;
 			end
+		end else begin
+			rst <= 0;
 		end
 	end
 endmodule

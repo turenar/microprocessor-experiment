@@ -87,15 +87,20 @@ module executor(
 			Rmem_enabled <= Amem_enabled; Rmem_addr <= Amem_addr; Rmem_data <= Amem_data;
 		end
 	endtask
-
-	always @ (posedge clk or posedge rst) begin
-		if (rst || Rerrno || (enabled && !in_valid)) begin
+	task Treset;
+		begin
 			if (rst) begin
 				Rerrno <= 0;
 			end
 			Rreg_map <= 0; Rnpc <= `PC_ILLEGAL;
 			Rreg_index <= 0; Rpc_enabled <= 0; Rmem_enabled <= 0;
 			Rreg_data <= 0; Rpc_addr <= 0; Rmem_addr <= 0; Rmem_data <= 0;
+		end
+	endtask
+
+	always @ (posedge clk) begin
+		if (rst || Rerrno || (enabled && !in_valid)) begin
+			Treset;
 		end else if (in_errno != 0) begin
 			Rerrno <= in_errno;
 		end else if (enabled && in_valid) begin
@@ -123,6 +128,11 @@ module executor(
 				Tzalu; Tzreg; Tzpc; Tzmem;
 				Rerrno <= `ERRC_HALTED;
 			end
+		end
+	end
+	always @ (negedge clk) begin
+		if (rst) begin
+			Treset;
 		end
 	end
 endmodule

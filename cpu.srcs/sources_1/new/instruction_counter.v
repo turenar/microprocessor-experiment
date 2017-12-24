@@ -9,7 +9,7 @@ module instruction_counter(
 
 	reg [31:0] pc;
 
-	always @(posedge rst or posedge clk) begin
+	always @(posedge clk) begin
 		if (rst) begin
 			pc <= 0;
 		end else begin

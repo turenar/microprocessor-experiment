@@ -22,7 +22,7 @@ module multipaged_screen(
 	endfunction
 
 	integer i;
-	always @ (posedge clk or posedge rst) begin
+	always @ (posedge clk) begin
 		if(rst) begin
 			for(i=0; i<256; i=i+1) begin
 				Rdata[i] <= 0;

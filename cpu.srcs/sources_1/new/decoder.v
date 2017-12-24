@@ -70,12 +70,16 @@ module decoder(
 			Rmem_write_enabled <= Aenabled; Rmem_write_addr <= Aaddr;
 		end
 	endtask
-
-	always @ (posedge clk or posedge rst) begin
-		if (rst || (enabled && !in_valid)) begin
+	task Treset;
+		begin
 			Rerrno <= 0; Rnpc <= `PC_ILLEGAL; Rreg_map <= 0;
 			Ropc <= 0; Ropt <= 0; Rrav <= 0; Rrbv <= 0;
 			Rrout <= 0; Raux <= 0; Tzmem;
+		end
+	endtask
+	always @ (posedge clk) begin
+		if (rst || (enabled && !in_valid)) begin
+			Treset;
 		end else if (enabled && in_valid) begin
 			Rerrno <= in_errno; Rnpc <= in_npc; Rreg_map <= in_reg_map;
 			Ropc <= in_opc; Ropt <= in_opt; /*Rrav <= in_rav; Rrbv <= in_rbv; */
@@ -106,6 +110,11 @@ module decoder(
 			end else begin
 				Tzmem; Rrav <= in_rav; Rrbv <= in_rbv;
 			end
+		end
+	end
+	always @ (negedge clk) begin
+		if (rst) begin
+			Treset;
 		end
 	end
 endmodule

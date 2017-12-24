@@ -23,11 +23,16 @@ module register_arbitrator (
 	wire [31:0] Wregister_lock; // map after wb unlocked
 	assign Wregister_lock = Rregister_lock & ~(wb_check ? wb_using_register_map : 0);
 
-	always @ (posedge clk or posedge rst) begin
-		if (rst) begin
+	task Treset;
+		begin
 			Rregister_lock <= 0;
 			Rpdc_no_conflict <= 1;
 			Rpdc_using_register_map <= 0;
+		end
+	endtask
+	always @ (posedge clk) begin
+		if (rst) begin
+			Treset;
 		end else begin
 			if (pdc_check) begin
 				if (Wpdc_read_checker == (Wpdc_read_checker & ~Wregister_lock)) begin
@@ -42,6 +47,11 @@ module register_arbitrator (
 			end else begin
 				Rregister_lock <= Wregister_lock;
 			end
+		end
+	end
+	always @ (negedge clk) begin
+		if (rst) begin
+			Treset;
 		end
 	end
 endmodule // register_arbitrator

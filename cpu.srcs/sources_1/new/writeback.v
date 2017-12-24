@@ -43,7 +43,7 @@ module writeback(
 	assign out_extmem_addr = Rmem_addr;
 	assign out_extmem_data = Rmem_data;
 
-	always @ (posedge clk or posedge rst) begin
+	always @ (posedge clk) begin
 		if(rst) begin
 			Rerrno <= 0; Rnpc <= `PC_ILLEGAL; Rreg_map <= 0;
 			Rreg_index <= 0; Rpc_enabled <= 0; Rmem_enabled <= 0;

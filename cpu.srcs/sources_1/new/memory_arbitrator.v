@@ -19,12 +19,24 @@ module memory_arbitrator (
 	assign Wdec_w_bitmask = Fbitmask(dec_w_enabled, dec_w_addr);
 	assign Wwb_w_bitmask = Fbitmask(wb_w_enabled, wb_w_addr);
 
-	always @ (posedge clk or posedge rst) begin
-		if (rst) begin
+	task Treset;
+		begin
 			Rlocked <= 0; Rdec_locked_fault <= 0;
+		end
+	endtask
+
+	always @ (posedge clk) begin
+		if (rst) begin
+			Treset;
 		end else begin
 			Rlocked <= (Rlocked & ~Wwb_w_bitmask) | Wdec_w_bitmask;
 			Rdec_locked_fault <= 0 != ((Rlocked & ~Wwb_w_bitmask) & (Wdec_r_bitmask | Wdec_w_bitmask));
 		end
 	end
+	always @ (negedge clk) begin
+		if (rst) begin
+			Treset;
+		end
+	end
+
 endmodule // register_arbitrator

@@ -81,15 +81,20 @@ module predecoder(
 			Rrout <= 0; Raux <= 0; Rimm <= 0; Raddr <= WOaddr;
 		end
 	endtask
-
-	always @ (posedge clk or posedge rst) begin
-		if (rst || Rerrno) begin
+	task Treset;
+		begin
 			if (rst) begin
 				Rerrno <= 0;
 			end
 			Rnpc <= `PC_ILLEGAL;
 			Ropc <= 0; Ropt <= 0; Rrar <= 0; Rrav <= 0; Rrbr <= 0; Rrbv <= 0;
 			Rrout <= 0; Raux <= 0; Rimm <= 0; Raddr <= 0;
+		end
+	endtask
+
+	always @ (posedge clk) begin
+		if (rst || Rerrno) begin
+			Treset;
 		end else if(Rerrno == 0 && enabled) begin
 			Rnpc <= in_npc;
 			if(WOopc == `OPCODE_AUX) begin
@@ -135,6 +140,12 @@ module predecoder(
 				/* illegal instruction */
 				Rerrno <= `ERRC_ILL;
 			end
+		end
+	end
+
+	always @ (negedge clk) begin
+		if (rst) begin
+			Treset;
 		end
 	end
 endmodule

@@ -14,7 +14,7 @@ module register(
 	wire [31:0] Wsanitized_w_data;
 
 	integer i;
-	always @(posedge clk or posedge rst) begin
+	always @(posedge clk) begin
 		if(rst) begin
 			for (i = 0; i<32; i=i+1) begin
 				files[i] <= 0;

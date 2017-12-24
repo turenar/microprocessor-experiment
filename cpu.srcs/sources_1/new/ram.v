@@ -49,7 +49,7 @@ module ram(
 		$readmemb("../../../../init.ram", mem);
 	end
 
-	always @(posedge clk or posedge rst) begin
+	always @(posedge clk) begin
 		if(rst) begin
 			addr1_reg <= 0; addr2_reg <= 0;
 		end else begin
