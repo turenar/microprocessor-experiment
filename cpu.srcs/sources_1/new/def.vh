@@ -1,3 +1,4 @@
+`default_nettype none
 `define EXTSGN16to32(_val_) { {16{_val_[15]}}, _val_}
 `define EXTZER16to32(_val_) { {16'b0}, _val_}
 

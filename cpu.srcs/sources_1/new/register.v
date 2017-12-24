@@ -1,12 +1,12 @@
 module register(
-	input clk,
-	input rst,
-	input [4:0] r1_index,
-	output [31:0] r1_data,
-	input [4:0] r2_index,
-	output [31:0] r2_data,
-	input [4:0] w_index,
-	input [31:0] w_data
+	input wire clk,
+	input wire rst,
+	input wire [4:0] r1_index,
+	output wire [31:0] r1_data,
+	input wire [4:0] r2_index,
+	output wire [31:0] r2_data,
+	input wire [4:0] w_index,
+	input wire [31:0] w_data
 	);
 	reg [4:0] r1_i;
 	reg [4:0] r2_i;

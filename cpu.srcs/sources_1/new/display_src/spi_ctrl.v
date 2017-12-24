@@ -31,9 +31,9 @@ module spi_ctrl(
     sclk,
     spi_fin
     );
-    input clk, rst, spi_en;
-    input [7:0] spi_data;
-    output cs, sdo, sclk, spi_fin;
+    input wire clk, rst, spi_en;
+    input wire [7:0] spi_data;
+    output wire cs, sdo, sclk, spi_fin;
 
     reg t_sdo, falling;
     reg [2:0] current_state;

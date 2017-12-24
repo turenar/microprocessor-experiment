@@ -1,30 +1,30 @@
 `include "def.vh"
 
 module executor(
-	input clk,
-	input rst,
-	input enabled,
-	input in_valid,
-	input [`ERRC_BITDEF] in_errno,
-	output [`ERRC_BITDEF] out_errno,
-	input [31:0] in_npc,
-	input [31:0] in_reg_map,
-	input [5:0] opcode,
-	input [`OPTYPE_BITDEF] optype, // 1=R, 2=I, 3=A
-	input [31:0] rav,
-	input [31:0] rbv,
-	input [4:0] rout,
-	input [10:0] aux,
-	input [31:0] mem_v,
-	output [31:0] out_npc,
-	output [31:0] out_reg_map,
-	output [4:0] out_reg_index,
-	output [31:0] out_reg_data,
-	output out_pc_enabled,
-	output [31:0] out_pc_addr,
-	output out_mem_enabled,
-	output [31:0] out_mem_addr,
-	output [31:0] out_mem_data
+	input wire clk,
+	input wire rst,
+	input wire enabled,
+	input wire in_valid,
+	input wire [`ERRC_BITDEF] in_errno,
+	output wire [`ERRC_BITDEF] out_errno,
+	input wire [31:0] in_npc,
+	input wire [31:0] in_reg_map,
+	input wire [5:0] opcode,
+	input wire [`OPTYPE_BITDEF] optype, // 1=R, 2=I, 3=A
+	input wire [31:0] rav,
+	input wire [31:0] rbv,
+	input wire [4:0] rout,
+	input wire [10:0] aux,
+	input wire [31:0] mem_v,
+	output wire [31:0] out_npc,
+	output wire [31:0] out_reg_map,
+	output wire [4:0] out_reg_index,
+	output wire [31:0] out_reg_data,
+	output wire out_pc_enabled,
+	output wire [31:0] out_pc_addr,
+	output wire out_mem_enabled,
+	output wire [31:0] out_mem_addr,
+	output wire [31:0] out_mem_data
 	);
 
 	reg [31:0] Rnpc; assign out_npc = Rnpc;

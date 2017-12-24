@@ -24,14 +24,14 @@
 `define MEM_SIZE (1<<(`MEM_ADDR_WIDTH-2))
 
 module ram(
-	input clk, input rst,
-	input we,
-	input [31:0] r1_addr,
-	input [31:0] r1_data,
-	input [31:0] r2_addr,
-	input [31:0] r2_data,
-	input [31:0] w_addr,
-	input [31:0] w_data
+	input wire clk, input wire rst,
+	input wire we,
+	input wire [31:0] r1_addr,
+	input wire [31:0] r1_data,
+	input wire [31:0] r2_addr,
+	input wire [31:0] r2_data,
+	input wire [31:0] w_addr,
+	input wire [31:0] w_data
 );
 	reg [13:0] addr1_reg;
 	reg [13:0] addr2_reg;

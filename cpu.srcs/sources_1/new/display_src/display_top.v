@@ -22,19 +22,19 @@
 `include "state_def.vh"
 
 module display_top(
-    input SYSCLK_IP,
-    input [7:0] SW_IP,
-    input CPU_RESETN_IP,
-    output [7:0] LED_OP,
-    output OLED_DC_OP,     //Data/Command Pin
-    output OLED_RES_OP,    //OLED RES
-    output OLED_SCLK_OP,   //SPI Clock
-    output OLED_SDIN_OP,   //SPI data out
-    output OLED_VBAT_OP,   //VBAT enable
-    output OLED_VDD_OP,     //VDD enable
-    input WE_IP,
-    input [5:0] WRITE_ADDR_IP,
-    input [7:0] WRITE_DATA_IP
+    input wire SYSCLK_IP,
+    input wire [7:0] SW_IP,
+    input wire CPU_RESETN_IP,
+    output wire [7:0] LED_OP,
+    output wire OLED_DC_OP,     //Data/Command Pin
+    output wire OLED_RES_OP,    //OLED RES
+    output wire OLED_SCLK_OP,   //SPI Clock
+    output wire OLED_SDIN_OP,   //SPI data out
+    output wire OLED_VBAT_OP,   //VBAT enable
+    output wire OLED_VDD_OP,     //VDD enable
+    input wire WE_IP,
+    input wire [5:0] WRITE_ADDR_IP,
+    input wire [7:0] WRITE_DATA_IP
     );
 
     reg [7:0] sw_r;

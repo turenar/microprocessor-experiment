@@ -1,12 +1,12 @@
 module memory_arbitrator (
-	input clk, input rst,
-	output dec_locked_fault,
-	input dec_r_enabled,
-	input [31:0] dec_r_addr,
-	input dec_w_enabled,
-	input [31:0] dec_w_addr,
-	input wb_w_enabled,
-	input [31:0] wb_w_addr);
+	input wire clk, input wire rst,
+	output wire dec_locked_fault,
+	input wire dec_r_enabled,
+	input wire [31:0] dec_r_addr,
+	input wire dec_w_enabled,
+	input wire [31:0] dec_w_addr,
+	input wire wb_w_enabled,
+	input wire [31:0] wb_w_addr);
 
 	reg [3:0] Rlocked;
 	reg Rdec_locked_fault; assign dec_locked_fault = Rdec_locked_fault;

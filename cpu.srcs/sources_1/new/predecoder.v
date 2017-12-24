@@ -1,21 +1,21 @@
 `include "def.vh"
 
 module predecoder(
-	input clk, input rst, input enabled,
-	output [`ERRC_BITDEF] errno,
-	input [31:0] in_npc,
-	input [31:0] instruction,
-	output [31:0] out_npc,
-	output [5:0] opcode,
-	output [`OPTYPE_BITDEF] optype, // 1=R, 2=I, 3=A
-	output [4:0] rar,
-	output [31:0] rav,
-	output [4:0] rbr,
-	output [31:0] rbv,
-	output [4:0] rout,
-	output [10:0] aux,
-	output [15:0] imm,
-	output [25:0] addr
+	input wire clk, input wire rst, input wire enabled,
+	output wire [`ERRC_BITDEF] errno,
+	input wire [31:0] in_npc,
+	input wire [31:0] instruction,
+	output wire [31:0] out_npc,
+	output wire [5:0] opcode,
+	output wire [`OPTYPE_BITDEF] optype, // 1=R, 2=I, 3=A
+	output wire [4:0] rar,
+	output wire [31:0] rav,
+	output wire [4:0] rbr,
+	output wire [31:0] rbv,
+	output wire [4:0] rout,
+	output wire [10:0] aux,
+	output wire [15:0] imm,
+	output wire [25:0] addr
 	);
 
 	reg [`ERRC_BITDEF] Rerrno; assign errno = Rerrno;

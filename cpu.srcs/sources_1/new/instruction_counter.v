@@ -1,10 +1,10 @@
 module instruction_counter(
-	input clk,
-	input rst,
-	input set_enabled,
-	input next_enabled,
-	input [31:0] set_addr,
-	output [31:0] pc_addr
+	input wire clk,
+	input wire rst,
+	input wire set_enabled,
+	input wire next_enabled,
+	input wire [31:0] set_addr,
+	output wire [31:0] pc_addr
 	);
 
 	reg [31:0] pc;

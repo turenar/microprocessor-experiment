@@ -1,12 +1,12 @@
 module multipaged_screen(
-	input clk, input rst,
-	input write_enabled,
-	input [31:0] address,
-	input [31:0] data,
-	input [1:0] page,
-	output oled_write_enabled,
-	output [5:0] oled_addr,
-	output [7:0] oled_data
+	input wire clk, input wire rst,
+	input wire write_enabled,
+	input wire [31:0] address,
+	input wire [31:0] data,
+	input wire [1:0] page,
+	output wire oled_write_enabled,
+	output wire [5:0] oled_addr,
+	output wire [7:0] oled_data
 	);
 
 	reg [7:0] Rdata[0:255];

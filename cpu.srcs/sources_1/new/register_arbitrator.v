@@ -1,13 +1,13 @@
 module register_arbitrator (
-	input clk, input rst,
-	input pdc_check,
-	input [4:0] pdc_r1_index,
-	input [4:0] pdc_r2_index,
-	input [4:0] pdc_w_index,
-	output pdc_no_conflict,
-	output [31:0] pdc_using_register_map,
-	input wb_check,
-	input [31:0] wb_using_register_map);
+	input wire clk, input wire rst,
+	input wire pdc_check,
+	input wire [4:0] pdc_r1_index,
+	input wire [4:0] pdc_r2_index,
+	input wire [4:0] pdc_w_index,
+	output wire pdc_no_conflict,
+	output wire [31:0] pdc_using_register_map,
+	input wire wb_check,
+	input wire [31:0] wb_using_register_map);
 
 	reg [31:0] Rregister_lock;
 	reg [31:0] Rpdc_using_register_map; assign pdc_using_register_map = Rpdc_using_register_map;

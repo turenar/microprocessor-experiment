@@ -24,9 +24,9 @@ module char_rom(
     addr,
     dout
     );
-    input rst;
-    input [10:0] addr;
-    output [7:0] dout;
+    input wire rst;
+    input wire [10:0] addr;
+    output wire [7:0] dout;
 
     reg [7:0] ch_rom [0:2047];
 

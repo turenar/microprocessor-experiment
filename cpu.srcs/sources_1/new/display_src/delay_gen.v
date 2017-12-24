@@ -28,9 +28,9 @@ module delay_gen(
     delay_en,
     delay_fin
     );
-    input clk, rst, delay_en;
-    input [11:0] delay_ms;
-    output delay_fin;
+    input wire clk, rst, delay_en;
+    input wire [11:0] delay_ms;
+    output wire delay_fin;
 
     reg [16:0] clk_counter;
     reg [11:0] ms_counter;

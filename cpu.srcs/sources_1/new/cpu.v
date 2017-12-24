@@ -22,15 +22,15 @@
 
 
 module cpu(
-    input sysclk,
-	input rst,
-	output halt,
-	output instruction_executed,
-	output [`ERRC_BITDEF] errno,
-	output extmem_wenabled,
-	output [31:0] pc,
-	output [31:0] extmem_addr,
-	output [31:0] extmem_data
+    input wire sysclk,
+	input wire rst,
+	output wire halt,
+	output wire instruction_executed,
+	output wire [`ERRC_BITDEF] errno,
+	output wire extmem_wenabled,
+	output wire [31:0] pc,
+	output wire [31:0] extmem_addr,
+	output wire [31:0] extmem_data
     );
 
 	wire clk;

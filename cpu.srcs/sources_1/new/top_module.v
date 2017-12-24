@@ -1,5 +1,6 @@
 `timescale 1ns / 1ps
 `include "def.vh"
+`include "display_src/char_def.vh"
 //////////////////////////////////////////////////////////////////////////////////
 // Company:
 // Engineer:
@@ -22,16 +23,16 @@
 
 
 module top_module(
-	input sysclk,
-	input cpu_resetn,
-	input [7:0] sw,
-	output [7:0] led,
-	output oled_dc,     //Data/Command Pin
-	output oled_res,    //OLED RES
-	output oled_sclk,   //SPI Clock
-	output oled_sdin,   //SPI data out
-	output oled_vbat,   //VBAT enable
-	output oled_vdd     //VDD enable
+	input wire sysclk,
+	input wire cpu_resetn,
+	input wire [7:0] sw,
+	output wire [7:0] led,
+	output wire oled_dc,     //Data/Command Pin
+	output wire oled_res,    //OLED RES
+	output wire oled_sclk,   //SPI Clock
+	output wire oled_sdin,   //SPI data out
+	output wire oled_vbat,   //VBAT enable
+	output wire oled_vdd     //VDD enable
 	);
 
 	reg rst;
@@ -44,8 +45,8 @@ module top_module(
 	cpu c0(
 		.sysclk(sysclk), .rst(rst),
 		.halt(halt), .instruction_executed(instruction_executed), .errno(errno),
-		.extmem_wenabled(c_extmem_wenabled), .extmem_addr(c_extmem_addr),
-		.extmem_data(c_extmem_data));
+		.extmem_wenabled(c_extmem_wenabled), .pc(c_pc),
+		.extmem_addr(c_extmem_addr), .extmem_data(c_extmem_data));
 
 	wire [63:0] hcsc_counter;
 	hardware_counter hc_sysclk(
@@ -93,22 +94,61 @@ module top_module(
 			tm_em_data <= data;
 		end
 	endtask
+	function [7:0] decoded_byte(input [3:0] hex_byte);
+	begin
+		if(hex_byte<4'd10) begin
+			decoded_byte = hex_byte+`Num0;
+		end else begin
+			decoded_byte = hex_byte+`UpA-4'd10;
+		end
+	end
+	endfunction
+
+	initial begin
+		rst <= 0;
+	end
 
 	always @ (posedge sysclk or negedge cpu_resetn) begin
 		if (~cpu_resetn) begin
-			counter <= 0; cpu_inst_executed <= 0;
+			rst <= 1; counter <= 0; cpu_inst_executed <= 0;
 			tm_em_wenabled <= 0; tm_em_addr <= 0; tm_em_data <= 0;
 		end else if (halt) begin
 			if (counter[5] == 0) begin
 				tm_em_wenabled <= 1;
 				if (counter[4] == 0) begin
-					Textmem_write(8 + counter[2:0], hcsc_counter >> ((7 - counter[2:0]) << 3));
+					case (counter[3:0])
+						0: Textmem_write(counter[4:0], `UpS); // S
+						1: Textmem_write(counter[4:0], `UpY); // Y
+						2: Textmem_write(counter[4:0], `UpS); // S
+						3: Textmem_write(counter[4:0], `UpC); // C
+						4: Textmem_write(counter[4:0], `UpL); // L
+						5: Textmem_write(counter[4:0], `UpK); // K
+						6,7: Textmem_write(counter[4:0], 20);
+						default: Textmem_write(counter[4:0], hcsc_counter >> ((7 - counter[2:0]) << 3));
+					endcase
 				end else begin
-					Textmem_write(24 + counter[2:0], hccc_counter >> ((7 - counter[2:0]) << 3));
+					case (counter[3:0])
+						0: Textmem_write(counter[4:0], `UpI); // I
+						1: Textmem_write(counter[4:0], `UpN); // N
+						2: Textmem_write(counter[4:0], `UpS); // S
+						3: Textmem_write(counter[4:0], `UpT); // T
+						4,5,6,7: Textmem_write(counter[4:0], `Null);
+						default: Textmem_write(counter[4:0], hccc_counter >> ((7 - counter[2:0]) << 3));
+					endcase
 				end
 				counter <= counter + 1;
 			end else begin
-				tm_em_wenabled <= 0;
+				if (counter[4] == 0) begin
+					case (counter[3:0])
+						0: Textmem_write(counter[5:0], `UpP); // P
+						1: Textmem_write(counter[5:0], `UpC); // C
+						2,3,4,5,6,7: Textmem_write(counter[5:0], 20);
+						default: Textmem_write(counter[5:0], decoded_byte(c_pc >> ((7 - counter[2:0]) << 3)));
+					endcase
+					counter <= counter + 1;
+				end else begin
+					tm_em_wenabled <= 0;
+				end
 			end
 		end else begin
 			rst <= 0;

@@ -34,10 +34,10 @@ module oled_ctrl(
     char_data,
     print_fin
     );
-    input clk, rst;
-    output cs, sdo, sclk, dc, res, vbat, vdd;
-    input [64*8-1:0] char_data;
-    output print_fin;
+    input wire clk, rst;
+    output wire cs, sdo, sclk, dc, res, vbat, vdd;
+    input wire [64*8-1:0] char_data;
+    output wire print_fin;
 
     wire init_cs, init_sdo, init_sclk, init_dc, init_en, init_done;
     wire exam_cs, exam_sdo, exam_sclk, exam_dc, exam_en, exam_done;

@@ -1,11 +1,11 @@
 `include "def.vh"
 
 module alu(
-	output [`ERRC_BITDEF] errno,
-	input [10:0] aux,
-	input [31:0] ra,
-	input [31:0] rb,
-	output [31:0] rout
+	output wire [`ERRC_BITDEF] errno,
+	input wire [10:0] aux,
+	input wire [31:0] ra,
+	input wire [31:0] rb,
+	output wire [31:0] rout
 	);
 
 	wire [4:0] shift_width = aux[10:6];

@@ -1,9 +1,9 @@
 `include "display_src/char_def.vh"
 
 module hardware_counter(
-    input CLK_IP,
-    input RSTN_IP,
-    output [63:0] COUNTER_OP
+    input wire CLK_IP,
+    input wire RSTN_IP,
+    output wire [63:0] COUNTER_OP
     );
 
     function [7:0] decoded_byte(
