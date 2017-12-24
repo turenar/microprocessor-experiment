@@ -147,11 +147,11 @@ Wステージの出力レジスタ/メモリ値は、フォワーディング(�
 
 ## パイプライン化によるクロック数の評価
 
-sample1.ram: 22instruction, 46sysclk -> パイプライン化により52%にsysclk削減 (削減率48%)
-sample2.ram: 65instruction, 131sysclk -> 50%
-sample3.ram: 2446instruction, 5519sysclk -> 56%
-sample4.ram: 105015instruction, 217777sysclk -> 51%
-samplef.ram: 103655instruction, 216525sysclk -> 52%
+* sample1.ram: 22instruction, 46sysclk -> パイプライン化により52%にsysclk削減 (削減率48%)
+* sample2.ram: 65instruction, 131sysclk -> 50%
+* sample3.ram: 2446instruction, 5519sysclk -> 56%
+* sample4.ram: 105015instruction, 217777sysclk -> 51%
+* samplef.ram: 103655instruction, 216525sysclk -> 52%
 
 
 Behavioral Simulation上では、ほとんどの場合で半分に満たない程度のsysclk削減が出来るようです。
